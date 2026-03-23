@@ -1,1 +1,2 @@
 # tsm-api
+TSM or Time Session Management is a system that automatically tracks time session of guests and then calculates the price of service once the session is over. It can be used in board game cafes, karaoke, car park or billiard business where time tracking of service is involved in final price.
