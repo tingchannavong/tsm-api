@@ -1,0 +1,52 @@
+@BASE_URL = http://localhost:9999
+
+### GET home
+GET  {{BASE_URL}}
+
+### REGISTER
+POST {{BASE_URL}}/auth/register
+Content-Type: application/json
+
+{
+    "username": "pao",
+    "password": "pp",
+    "phone": "4352345",
+    "email": "pao@gmail.com",
+    "firstname": "pao",
+    "lastname": "zhang"
+}
+
+### Login
+# to grab response from below request and save in login
+# @name login
+POST {{BASE_URL}}/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "superadmin",
+    "password": "admin88"
+}
+
+### GET my info
+@ACCESS_TOKEN = {{login.response.body.access_token}}
+GET {{BASE_URL}}/api/auth/me
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+@RESET_TOKEN = {{reset.response.body.resetToken}}
+# @RESET_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjQzNTIzNDUiLCJpZCI6MiwiaWF0IjoxNzcyNTA1NDgzLCJleHAiOjE3NzI1MDYwODN9.tLLJn6_cWLGpZA8F2GWAxlSaSI7iklDxjFj4vprvfNo
+### PATCH reset password
+PATCH {{BASE_URL}}/api/auth/reset-password/{{RESET_TOKEN}} 
+Content-Type: application/json
+
+{
+    "password": "hehehehe"
+}
+
+### POST forgot password
+# @name reset
+POST {{BASE_URL}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+    "phone" : "4352345"
+}

@@ -1,0 +1,33 @@
+import express from "express";
+import authRoutes from "./routes/auth.routes.js";
+import errorHandler from "./middlewares/errorHandler.middleware.js";
+import cors from "cors";
+import notFound from "./middlewares/notFound.middleware.js";
+
+const app = express(); 
+const PORT = 9999;
+
+console.log("Hit the route!");
+
+app.use(cors({
+    origin: "http://localhost:5173", // to let app accept request from this host
+    credentials: true // to accept refresh token
+})
+);
+
+app.use(express.json());
+app.use('/api/auth', authRoutes);
+
+app.get('/', (re, res) => {
+    res.send('welcome to backend API, prisma & JWT login project v0.1.0');
+});
+
+app.use(notFound);
+
+// throw error handler for all routes
+app.use(errorHandler);
+
+app.listen(PORT, () => {
+    console.log(`server is running at http://localhost:${PORT}`);
+});
+

@@ -1,0 +1,165 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js" // need to add -js
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum RoleType {
+  ADMIN
+  STAFF
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model User {
+  id              Int             @id @default(autoincrement())
+  username        String          @unique
+  password        String
+  email           String          @unique
+  firstname       String
+  lastname        String
+  phone           String          @unique
+  role            RoleType        @default(STAFF)
+  status          UserStatus      @default(ACTIVE)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt @db.Timestamp(0)
+  createdOrders   Order[]         @relation("OrderCreatedBy")
+  updatedOrders   Order[]         @relation("OrderUpdatedBy")
+  updatedSessions SessionRecord[] @relation("SessionUpdatedBy")
+}
+
+model Location {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
+  displayName String          @unique
+  qrCode      String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt @db.Timestamp(0)
+  sessions    SessionRecord[]
+}
+
+enum SessionStatus {
+  ACTIVE
+  ENDED
+  BILLED
+  CANCELLED
+}
+
+model SessionRecord {
+  id            Int           @id @default(autoincrement())
+  groupId       String        @default(uuid())
+  location      Location?     @relation(fields: [locationId], references: [id])
+  locationId    Int?
+  name          String?
+  startTime     DateTime      @default(now())
+  endTime       DateTime?
+  durationMin   Int?
+  status        SessionStatus
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt @db.Timestamp(0)
+  pricing       Pricing?      @relation(fields: [pricingId], references: [id])
+  pricingId     Int?
+  orderDetail   OrderDetail?  @relation(fields: [orderDetailId], references: [id])
+  orderDetailId Int?
+  updatedBy     User?         @relation("SessionUpdatedBy", fields: [updatedById], references: [id])
+  updatedById   Int?
+}
+
+model OrderDetail {
+  id             Int             @id @default(autoincrement())
+  quantity       Int
+  priceAtBilling Decimal         @db.Decimal(10, 2)
+  unitAtBilling  String
+  subTotal       Decimal         @db.Decimal(10, 2)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt @db.Timestamp(0)
+  order          Order           @relation(fields: [orderId], references: [id])
+  orderId        Int
+  pricing        Pricing?        @relation(fields: [pricingId], references: [id])
+  pricingId      Int?
+  sessions       SessionRecord[]
+}
+
+enum OrderStatus {
+  PAID
+  UNPAID
+}
+
+model Order {
+  id           Int           @id @default(autoincrement())
+  discount     Decimal       @db.Decimal(10, 2)
+  total        Decimal       @db.Decimal(10, 2)
+  status       OrderStatus
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt @db.Timestamp(0)
+  orderDetails OrderDetail[]
+  createdBy    User?         @relation("OrderCreatedBy", fields: [createdById], references: [id])
+  createdById  Int?
+  updatedBy    User?         @relation("OrderUpdatedBy", fields: [updatedById], references: [id])
+  updatedById  Int?
+}
+
+enum RoundingMethod {
+  EXACT
+  ROUND_UP
+}
+
+model Pricing {
+  id                 Int             @id @default(autoincrement())
+  name               String          @unique
+  billingIntervalMin Int
+  roundingMethod     RoundingMethod
+  price              Decimal         @db.Decimal(10, 2)
+  unit               Unit?           @relation(fields: [unitId], references: [id])
+  unitId             Int?
+  currency           Currency?       @relation(fields: [currencyId], references: [id])
+  currencyId         Int?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt @db.Timestamp(0)
+  sessions           SessionRecord[]
+  orderDetails       OrderDetail[]
+}
+
+model Unit {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  pricings Pricing[]
+}
+
+model Currency {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  code     String    @unique @db.Char(3)
+  symbol   String    @unique @db.VarChar(10)
+  pricings Pricing[]
+}
+
+// not needed now, for future loyalty point feature
+// model Customer {
+//   id            Int      @id @default(autoincrement())
+//   name          String
+//   phone         String?   @unique
+//   isRegistered  Boolean @default(false)
+//   createdAt     DateTime @default(now())
+//   updatedAt     DateTime @default(now())
+// }
+
+// for security purposes
+// @User Table resetTokens Token[]
+// model Token {
+//   id    Int    @id @default(autoincrement())
+//   token String
+//   user   User? @relation(fields: [userId], references: [id])
+//   userId Int?
+// }
