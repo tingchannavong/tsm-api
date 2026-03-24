@@ -1,0 +1,23 @@
+@BASE_URL = http://localhost:9999
+@ACCESS_TOKEN = {{login.response.body.access_token}}
+
+### Login
+# @name login
+POST {{BASE_URL}}/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "superadmin",
+    "password": "admin88"
+}
+
+### Create location
+POST {{BASE_URL}}/api/locations
+Content-Type: application/json
+
+{
+    "name": "Table 1",
+    "displayName": "T1"
+}
+
+
