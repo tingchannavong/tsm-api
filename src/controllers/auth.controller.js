@@ -2,7 +2,6 @@ import {
   createUser,
   findUserById,
   findUserByPhone,
-  findUserByUsername,
   updatePasswordById,
   verifyUserAuth,
 } from "../services/auth.services.js";
@@ -10,9 +9,9 @@ import { generateToken } from "../utils/jwt.js";
 import createError from "http-errors";
 import "dotenv/config";
 
-export async function register(re, res, next) {
+export async function registerController(req, res, next) {
   const { username, password, phone, email, firstname, lastname, role } =
-    re.body;
+    req.body;
 
   const userData = {
     username,
@@ -25,7 +24,7 @@ export async function register(re, res, next) {
   };
 
   // check role only ADMIN allow to add
-  if (re.userPayload.role !== "ADMIN") {
+  if (req.userPayload.role !== "ADMIN") {
     next(createError(401, "Invalid permission"));
   }
 
@@ -37,9 +36,9 @@ export async function register(re, res, next) {
   }
 }
 
-export async function login(re, res, next) {
+export async function loginController(req, res, next) {
   try {
-    const { username, password } = re.body;
+    const { username, password } = req.body;
     const user = await verifyUserAuth(username, password);
 
     if (!user) {
@@ -57,9 +56,9 @@ export async function login(re, res, next) {
   }
 }
 
-export async function getUserData(re, res) {
+export async function getUserDataController(req, res) {
   try {
-    const { id, role, username } = re.userPayload;
+    const { id, role, username } = req.userPayload;
     const userData = await findUserById(id);
 
     res.json({
@@ -75,8 +74,8 @@ export async function getUserData(re, res) {
 }
 
 // Later
-export async function checkUser(re, res) {
-  const { phone } = re.body;
+export async function checkUserController(req, res) {
+  const { phone } = req.body;
 
   const user = await findUserByPhone(phone);
   console.log(user);
@@ -100,10 +99,10 @@ export async function checkUser(re, res) {
   }
 }
 
-export async function resetPassword(re, res) {
+export async function resetPasswordController(req, res) {
   const newPassword = re.body.password;
 
-  const id = Number(re.userPayload.id);
+  const id = Number(req.userPayload.id);
   // todo: check that identity exists
 
   // if yes, hash the new password and save to db
