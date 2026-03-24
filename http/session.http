@@ -1,0 +1,60 @@
+@BASE_URL = http://localhost:9999
+@ACCESS_TOKEN = {{login.response.body.access_token}}
+
+### Login
+# @name login
+POST {{BASE_URL}}/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "superadmin",
+    "password": "admin88"
+}
+
+### Create session
+POST {{BASE_URL}}/api/sessions
+Content-Type: application/json
+
+{
+    "locationId": "sth", 
+    "groupId": "sth", 
+    "name": "player",
+    "people": 4,
+    "pricingId": 1
+}
+
+### Get all sessions
+GET {{BASE_URL}}/api/sessions
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+### Get filtered session
+GET {{BASE_URL}}/api/sessions/filter?locationId="sth"
+
+### Get session by Id
+GET {{BASE_URL}}/api/sessions/1
+
+### Update session by Id
+PATCH {{BASE_URL}}/api/sessions/1
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+{
+    "status": "ENDED", 
+    "startTime": null, 
+    "endTime": null,
+    "name": "Billy"
+}
+
+### Delete session by Id
+DELETE {{BASE_URL}}/api/sessions/1
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+### Update session by Group
+PATCH {{BASE_URL}}/api/sessions/groups/groupUUId
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+{
+    "status": "ENDED", 
+    "startTime": null, 
+    "endTime": null,
+}
+
