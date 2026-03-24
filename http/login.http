@@ -4,13 +4,14 @@
 GET  {{BASE_URL}}
 
 ### REGISTER
-POST {{BASE_URL}}/auth/register
+POST {{BASE_URL}}/api/auth/register
+Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-    "username": "pao",
+    "username": "mei",
     "password": "pp",
-    "phone": "4352345",
+    "phone": "394892384",
     "email": "pao@gmail.com",
     "firstname": "pao",
     "lastname": "zhang"
