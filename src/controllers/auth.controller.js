@@ -4,19 +4,19 @@ import createError from "http-errors";
 import "dotenv/config";
 
 
-export async function register(re, res) {
+export async function register(re, res, next) {
     const {username, password, phone, email, firstname, lastname, role} = re.body;
     
     const userData = {username, password, phone, email, firstname, lastname, role}
 
-    const userExist = await findUserByUsername(username);
+    // check role only ADMIN allow
+    if (re.userPayload.role !== 'ADMIN') { next(createError(401, "Invalid permission")) }
 
-    // check if username alrd exist in db
-    if (userExist) {
-          return res.status(400).json({message: "username already exists. please try another one."});
-    } else {
-         const user = await createUser(userData);
-        return res.status(201).json({message: "user added successfully", user});
+    try {
+        const user = await createUser(userData);
+        res.status(201).json({message: "user added successfully", user});
+    } catch (error) {
+        next(error)
     }
 }
 
@@ -24,7 +24,7 @@ export async function login(re, res) {
     const {username, password} = re.body;
 
     const user =  await verifyUserAuth(username, password);
-    console.log(user);
+
     if (user) {
         const { role, id} = user;
         const payload = { username, role, id };

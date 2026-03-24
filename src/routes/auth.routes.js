@@ -4,7 +4,7 @@ import { checkAuth, checkResetToken } from "../middlewares/checkAuth.js";
 
 const router = express.Router();
 
-router.post('/register', register);
+router.post('/register', checkAuth, register);
 
 router.post('/login', login);
 
