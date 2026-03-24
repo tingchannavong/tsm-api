@@ -1,8 +1,6 @@
 import { verifyUserToken } from "../utils/jwt.js";
 import createError from "http-errors";
 
-//  TODO: validate & otheres with .trim(), password fields with .trim and .toString()
-
 export function checkAuth(req, res, next) {
     if (!req.headers.authorization) {
         throw createError(401, "No access token provided");
