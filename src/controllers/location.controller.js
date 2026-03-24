@@ -6,7 +6,6 @@ export async function createLocationController(req, res, next) {
   const data = { name, displayName };
 
   // qrCode is system generated
-  // if (qrCode) data.qrCode = qrCode;
 
   try {
     const resp = await createLocation(data);

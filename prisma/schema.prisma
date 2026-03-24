@@ -65,9 +65,9 @@ model SessionRecord {
   startTime     DateTime      @default(now())
   endTime       DateTime?
   durationMin   Int?
-  status        SessionStatus
+  status        SessionStatus @default(ACTIVE)
   createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt @db.Timestamp(0)
+  updatedAt     DateTime      @default(now()) @updatedAt @db.Timestamp(0)
   pricing       Pricing?      @relation(fields: [pricingId], references: [id])
   pricingId     Int?
   orderDetail   OrderDetail?  @relation(fields: [orderDetailId], references: [id])

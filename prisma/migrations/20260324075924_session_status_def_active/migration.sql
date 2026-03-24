@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `SessionRecord` MODIFY `status` ENUM('ACTIVE', 'ENDED', 'BILLED', 'CANCELLED') NOT NULL DEFAULT 'ACTIVE';
