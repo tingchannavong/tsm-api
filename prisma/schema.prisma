@@ -40,7 +40,7 @@ model User {
 }
 
 model Location {
-  id          Int             @id @default(autoincrement())
+  id          String             @id @default(uuid())
   name        String          @unique
   displayName String          @unique
   qrCode      String?
@@ -60,7 +60,7 @@ model SessionRecord {
   id            Int           @id @default(autoincrement())
   groupId       String        @default(uuid())
   location      Location?     @relation(fields: [locationId], references: [id])
-  locationId    Int?
+  locationId    String?
   name          String?
   startTime     DateTime      @default(now())
   endTime       DateTime?
