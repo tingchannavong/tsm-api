@@ -1,4 +1,6 @@
 @BASE_URL = http://localhost:9999
+@ACCESS_TOKEN = {{login.response.body.access_token}}
+@RESET_TOKEN = {{reset.response.body.resetToken}}
 
 ### GET home
 GET  {{BASE_URL}}
@@ -9,10 +11,10 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-    "username": "mei",
+    "username": "superadmin",
     "password": "pp",
-    "phone": "394892384",
-    "email": "pao@gmail.com",
+    "phone": "45345",
+    "email": "n@gmail.com",
     "firstname": "pao",
     "lastname": "zhang"
 }
@@ -29,25 +31,26 @@ Content-Type: application/json
 }
 
 ### GET my info
-@ACCESS_TOKEN = {{login.response.body.access_token}}
 GET {{BASE_URL}}/api/auth/me
 Authorization: Bearer {{ACCESS_TOKEN}}
 
-@RESET_TOKEN = {{reset.response.body.resetToken}}
-# @RESET_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjQzNTIzNDUiLCJpZCI6MiwiaWF0IjoxNzcyNTA1NDgzLCJleHAiOjE3NzI1MDYwODN9.tLLJn6_cWLGpZA8F2GWAxlSaSI7iklDxjFj4vprvfNo
-### PATCH reset password
-PATCH {{BASE_URL}}/api/auth/reset-password/{{RESET_TOKEN}} 
-Content-Type: application/json
 
-{
-    "password": "hehehehe"
-}
 
+
+// TO BE IMPLEMENTED LATER 
 ### POST forgot password
 # @name reset
 POST {{BASE_URL}}/api/auth/forgot-password
 Content-Type: application/json
 
 {
-    "phone" : "4352345"
+    "email" : "4352345"
+}
+
+### PATCH reset password
+PATCH {{BASE_URL}}/api/auth/reset-password/{{RESET_TOKEN}} 
+Content-Type: application/json
+
+{
+    "password": "hehehehe"
 }
