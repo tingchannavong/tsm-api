@@ -1,6 +1,16 @@
 import prisma from "../src/libs/prismaClient.js";
+
 async function main() {
-    // await prisma.$executeRaw`TRUNCATE TABLE User`
+   await prisma.pricing.create({
+    data: {
+      billingIntervalMin: 1,
+      name: "Hourly",
+      currencyId: 1,
+      unitId: 1,
+      roundingMethod: "ROUND_UP",
+      price: 1.23
+    },
+  })
 }
 
 main().catch(error => {
