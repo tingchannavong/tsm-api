@@ -4,6 +4,7 @@ import sessionRoutes from "./routes/session.routes.js";
 import errorHandler from "./middlewares/errorHandler.middleware.js";
 import cors from "cors";
 import notFound from "./middlewares/notFound.middleware.js";
+import locationRoutes from "./routes/location.routes.js";
 
 const app = express(); 
 const PORT = 9999;
@@ -19,6 +20,8 @@ app.use(cors({
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/sessions', sessionRoutes);
+
+app.use('/api/locations', locationRoutes);
 
 app.get('/', (re, res) => {
     res.send('welcome to backend API, prisma & JWT login project v0.1.0');

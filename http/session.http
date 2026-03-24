@@ -16,19 +16,20 @@ POST {{BASE_URL}}/api/sessions
 Content-Type: application/json
 
 {
-    "locationId": "sth", 
-    "groupId": "sth", 
-    "name": "player",
-    "people": 4,
+    "locationId": "c2a40b6a-64c6-4d5c-88c6-471ccdaa327b", 
+    "groupId": null, 
+    "name1": "faii",
+    "name2": "tina",
+    "people": 2,
     "pricingId": 1
 }
+
+### Get filtered session
+GET {{BASE_URL}}/api/sessions/filter?locationId="c2a40b6a-64c6-4d5c-88c6-471ccdaa327b"
 
 ### Get all sessions
 GET {{BASE_URL}}/api/sessions
 Authorization: Bearer {{ACCESS_TOKEN}}
-
-### Get filtered session
-GET {{BASE_URL}}/api/sessions/filter?locationId="sth"
 
 ### Get session by Id
 GET {{BASE_URL}}/api/sessions/1
