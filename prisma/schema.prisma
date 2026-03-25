@@ -64,7 +64,7 @@ model SessionRecord {
   name          String?
   startTime     DateTime      @default(now())
   endTime       DateTime?
-  durationMin   Int?
+  durationMin   Int? @default(dbgenerated())
   status        SessionStatus @default(ACTIVE)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @default(now()) @updatedAt @db.Timestamp(0)
