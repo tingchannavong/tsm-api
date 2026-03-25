@@ -1,26 +1,21 @@
-import { z } from 'zod';
-import { IdSchema } from './base.schema.js';
+import createError from "http-errors";
 
-//  TODO: validate & otheres with .trim(), password fields with .trim and .toString()
+// middleware to handle all incoming validations
 export const validate = (schema) => (req, res, next) => {
-    try {
-        const validated = schema.parse({
-            params: req.params,
-            query: req.query,
-            body: req.body
-        });
+  try {
+    const validated = schema.parse({
+      params: req.params,
+      query: req.query,
+      body: req.body,
+    });
 
-      req.params = validated.params
-      req.query = validated.query
-      req.body = validated.body
+    if (validated.params) req.params = validated.params;
+    if (validated.query) req.query = validated.query;
+    if (validated.body) req.body = validated.body;
 
-    } catch (error) {
-    return res.status(400).json(error.errors);
-    }
-}
-
-export const GetSessionSchema = z.object({
-  params: z.object({
-    id: IdSchema,
-  }),
-});
+    next();
+  } catch (error) {
+    // console.log(error.flatten().fieldErrors);
+    next(createError(400, `${error.issues[0].message} of ${error.issues[0].path}`));
+  }
+};
