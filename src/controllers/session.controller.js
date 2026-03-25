@@ -4,6 +4,7 @@ import {
   getAllSessions,
   getSessionById,
   getSessionsByLocation,
+  updateSessionByGroup,
   updateSessionById,
 } from "../services/session.service.js";
 import createError from "http-errors";
@@ -39,7 +40,7 @@ export async function getAllSessionsController(req, res, next) {
     const responses = await getAllSessions(req.query);
 
     res.status(200).json({
-      message: "All sessions successfully.",
+      message: "All sessions retrieved successfully.",
       responses,
     });
   } catch (error) {
@@ -91,5 +92,15 @@ export async function deleteSessionController(req, res, next) {
 
 // TO DO
 export async function updateGroupSessionController(req, res, next) {
-  res.send("update by group");
+   const { id } = req.params;
+
+  try {
+    const resp = await updateSessionByGroup(id, req.body);
+    res.status(200).json({
+      message: "Group session updated successfully.",
+      resp,
+    });
+  } catch (error) {
+    next(error);
+  }
 }

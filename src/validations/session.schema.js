@@ -25,9 +25,9 @@ export const CreateSessionSchema = z.object({
 
 export const GetSessionsSchema = z.object({
   query: z.object({
-    locationId: LocationIdScm,
-    groupId: NullGroupIdScm,
-    status: z.nativeEnum(SessionStatus),
+    locationId: LocationIdScm.optional(),
+    groupId: NullGroupIdScm.optional(),
+    status: z.nativeEnum(SessionStatus).optional(),
   })
 });
 

@@ -79,35 +79,41 @@ export async function getSessionById(id) {
   });
 }
 
+export async function getSessionByGroupId(groupId) {
+  return await prisma.sessionRecord.findFirst({
+    where: { groupId },
+    select: { startTime: true, endTime: true },
+  });
+}
+
 export async function updateSessionById(id, payload) {
   const { status, name, startTime, endTime } = payload;
 
-  const currentSession = await getSessionById(id);
+  const needsTimeValidation = startTime || endTime;
 
-  if (!currentSession) throw createError(404, "Session not found");
+  if (needsTimeValidation) {
+    const currentSession = await getSessionById(id);
+
+    if (!currentSession) throw createError(404, "Session not found");
+
+    const finalStart = startTime
+      ? new Date(startTime)
+      : currentSession.startTime;
+    const finalEnd = endTime ? new Date(endTime) : currentSession.endTime;
+    if (finalEnd < finalStart) {
+      throw createError(400, "End time cannot be earlier than start time");
+    }
+  }
 
   const data = {};
 
   if (status) data.status = status;
   if (name) data.name = name;
+  if (startTime) data.startTime = new Date(startTime);
+  if (endTime) data.endTime = new Date(endTime);
 
-  // check end time more than start time logic
-  if (startTime && endTime) {
-    if (endTime < startTime) {
-      throw createError(400, "End time is less than start time");
-    }
-    data.startTime = startTime;
-    data.endTime = endTime;
-  } else if (startTime) {
-    if (currentSession.endTime < startTime) {
-      throw createError(400, "End time is less than start time");
-    }
-    data.startTime = startTime;
-  } else if (endTime) {
-    if (endTime < currentSession.startTime) {
-      throw createError(400, "End time is less than start time");
-    }
-    data.endTime = endTime;
+  if (Object.keys(data).length === 0) {
+    throw createError(400, "No valid update fields provided");
   }
 
   return await prisma.sessionRecord.update({
@@ -121,3 +127,53 @@ export async function deleteSessionById(id) {
     where: { id },
   });
 }
+
+export async function updateSessionByGroup(groupId, payload) {
+  const { status, endTime } = payload;
+  const data = {};
+  
+  if (status) data.status = status;
+
+  const sampleSession = await getSessionByGroupId(groupId);
+
+  if (!sampleSession) throw createError(404, "Session not found");
+
+  if (endTime) {
+    const finalEnd = new Date(endTime);
+
+    if (finalEnd < sampleSession.startTime) {
+      throw createError(400, "End time cannot be earlier than start time");
+    }
+    data.endTime = new Date(endTime);
+  }
+
+  if (Object.keys(data).length === 0) {
+    throw createError(400, "No valid update fields provided");
+  }
+
+  return await prisma.sessionRecord.updateMany({
+    where: { groupId },
+    data,
+  });
+}
+
+console.log(new Date("2026-03-24 18:15:00").toISOString());
+
+//  // check end time more than start time logic
+//   if (startTime && endTime) {
+//     if (endTime < startTime) {
+//       throw createError(400, "End time is less than start time");
+//     }
+//     data.startTime = startTime;
+//     data.endTime = endTime;
+//   } else if (startTime) {
+//     if (currentSession.endTime < startTime) {
+//       throw createError(400, "End time is less than start time");
+//     }
+//     data.startTime = startTime;
+//   } else if (endTime) {
+//     if (endTime < currentSession.startTime) {
+//       throw createError(400, "End time is less than start time");
+//     }
+//     data.endTime = endTime;
+//   }
