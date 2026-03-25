@@ -16,8 +16,8 @@ POST {{BASE_URL}}/api/locations
 Content-Type: application/json
 
 {
-    "name": "Table 1",
-    "displayName": "T1"
+    "name": "Table 2",
+    "displayName": "T2"
 }
 
 
