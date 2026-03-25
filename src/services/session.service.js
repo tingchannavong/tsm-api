@@ -1,13 +1,9 @@
 import prisma from "../libs/prismaClient.js";
+import createError from "http-errors";
 
 export async function createSessions(payload) {
-  const {
-    name1 = "Guest 1",
-    locationId = undefined,
-    groupId = undefined,
-    people = undefined,
-    pricingId = undefined,
-  } = payload;
+  // TO DO: refactor into names: [array]
+  const { name1 = "Guest 1", locationId, groupId, people, pricingId } = payload;
 
   const totalPeople = Number(people) || 1;
   const result = [];
@@ -31,7 +27,7 @@ export async function createSessions(payload) {
 
     const session = await createSession({
       name: eachName,
-      locationId: locationId,
+      locationId,
       groupId: newGroupId,
       pricingId,
     });
@@ -44,10 +40,10 @@ export async function createSessions(payload) {
 export async function createSession(sessionData) {
   const result = await prisma.sessionRecord.create({
     data: {
-      name: sessionData.name,
-      locationId: sessionData.locationId, 
-      groupId: sessionData.groupId,
-      pricingId: sessionData.pricingId,
+      name: sessionData.name || "Guest",
+      locationId: sessionData.locationId || undefined,
+      groupId: sessionData.groupId || undefined,
+      pricingId: sessionData.pricingId || undefined,
     },
   });
 
@@ -62,10 +58,14 @@ export async function getSessionsByLocation(locationId) {
   return result;
 }
 
-export async function getAllSessions(filters) {
-  if (!filters) {
-    return await prisma.sessionRecord.findMany();
-  }
+export async function getAllSessions(payload) {
+  const { groupId, locationId, status } = payload;
+
+  const filters = {};
+  if (groupId) filters.groupId = groupId;
+  if (locationId) filters.locationId = locationId;
+  if (status) filters.status = status;
+
   const result = await prisma.sessionRecord.findMany({
     where: filters,
   });
@@ -79,11 +79,41 @@ export async function getSessionById(id) {
   });
 }
 
-export async function updateSessionById(id, data) {
-  return await prisma.sessionRecord.update({
-    where: { id },
-    data,
-  });
+export async function updateSessionById(id, payload) {
+  const { status, name, startTime, endTime } = payload;
+
+  const currentSession = await getSessionById(id);
+
+  const data = {};
+
+  if (status) data.status = status;
+  if (name) data.name = name;
+
+  // check end time more than start time logic
+  if (startTime && endTime) {
+    if (endTime < startTime) {
+      throw createError(400, "End time is less than start time");
+    }
+    data.startTime = startTime;
+    data.endTime = endTime;
+  } else if (startTime) {
+    if (currentSession.endTime < startTime) {
+      throw createError(400, "End time is less than start time");
+    }
+    data.startTime = startTime;
+  } else if (endTime) {
+    if (endTime < currentSession.startTime) {
+      throw createError(400, "End time is less than start time");
+    }
+    data.endTime = endTime;
+  }
+
+  // auto calc duration min from db how?
+
+  // return await prisma.sessionRecord.update({
+  //   where: { id },
+  //   data,
+  // });
 }
 
 export async function deleteSessionById(id) {
