@@ -75,32 +75,6 @@ export async function updateSessionController(req, res, next) {
   }
 }
 
-// export async function updateSessionController(req, res, next) {
-//     const {id} = req.params;
-
-//   console.log(req.body)
-//   const { status, name, startTime, endTime } = req.body;
-//   const data = {};
-
-//   // logic is end time after start time
-//   // auto calc duration min from db how?
-
-//   try {
-//     if (status) data.status = status;
-//     if (name) data.name = name;
-//     if (startTime) data.startTime = startTime;
-//     if (endTime) data.endTime = endTime;
-
-//     const resp = await updateSessionById(id, req.body);
-//     res.status(200).json({
-//       message: "Session updated successfully.",
-//       resp,
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// }
-
 export async function deleteSessionController(req, res, next) {
   const { id } = req.params;
 
@@ -115,6 +89,7 @@ export async function deleteSessionController(req, res, next) {
   }
 }
 
+// TO DO
 export async function updateGroupSessionController(req, res, next) {
   res.send("update by group");
 }

@@ -84,6 +84,8 @@ export async function updateSessionById(id, payload) {
 
   const currentSession = await getSessionById(id);
 
+  if (!currentSession) throw createError(404, "Session not found");
+
   const data = {};
 
   if (status) data.status = status;
@@ -108,12 +110,10 @@ export async function updateSessionById(id, payload) {
     data.endTime = endTime;
   }
 
-  // auto calc duration min from db how?
-
-  // return await prisma.sessionRecord.update({
-  //   where: { id },
-  //   data,
-  // });
+  return await prisma.sessionRecord.update({
+    where: { id },
+    data,
+  });
 }
 
 export async function deleteSessionById(id) {

@@ -18,11 +18,11 @@ POST {{BASE_URL}}/api/sessions
 Content-Type: application/json
 
 {
-    "locationId": "14f66239-de40-4575-aea1-f7d7405b4695", 
+    "locationId": "c2a40b6a-64c6-4d5c-88c6-471ccdaa327b", 
     "groupId": null, 
-    "name1": "om",
-    "name2": "art",
-    "people": 2,
+    "name1": "drew",
+    "name2": "",
+    "people": -1,
     "pricingId": 1
 }
 
@@ -31,28 +31,29 @@ GET {{BASE_URL}}/api/sessions/filter?locationId={{locationId}}
 
 ### Get all sessions
 # GET {{BASE_URL}}/api/sessions
-GET {{BASE_URL}}/api/sessions?locationId={{locationId}}&groupId={{groupId}}&status=ACTIVE&name=baby
+GET {{BASE_URL}}/api/sessions?locationId={{locationId}}&groupId={{groupId}}&status=ACTIVE
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Get session by Id
-GET {{BASE_URL}}/api/sessions/8
+GET {{BASE_URL}}/api/sessions/25
+
 
 ### Update session by Id
-PATCH {{BASE_URL}}/api/sessions/2
+PATCH {{BASE_URL}}/api/sessions/30
 Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
     "status": "ENDED", 
-    "endTime": "2026-03-24T11:27:36.990Z",
-    "name": "Billy"
+    "endTime": "2026-03-25T09:32:09.345Z",
+    "name": "Prince"
 }
 
 # patch later
 # { locationId, groupId, pricingId }
 
 ### Delete session by Id
-DELETE {{BASE_URL}}/api/sessions/8
+DELETE {{BASE_URL}}/api/sessions/1
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Update session by Group
