@@ -2,7 +2,7 @@
 @ACCESS_TOKEN = {{login.response.body.access_token}}
 @locationId=c2a40b6a-64c6-4d5c-88c6-471ccdaa327b
 @groupId=9a071ddb-5d94-4d2b-a8ad-1367360cea72
-
+@LOC2=14f66239-de40-4575-aea1-f7d7405b4695
 ### Login
 # @name login
 POST {{BASE_URL}}/api/auth/login
@@ -18,10 +18,10 @@ POST {{BASE_URL}}/api/sessions
 Content-Type: application/json
 
 {
-    "locationId": "c2a40b6a-64c6-4d5c-88c6-471ccdaa327b", 
+    "locationId": "14f66239-de40-4575-aea1-f7d7405b4695", 
     "groupId": null, 
-    "name1": "faii",
-    "name2": "tina",
+    "name1": "om",
+    "name2": "art",
     "people": 2,
     "pricingId": 1
 }
