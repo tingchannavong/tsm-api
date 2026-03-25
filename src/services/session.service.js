@@ -128,6 +128,7 @@ export async function deleteSessionById(id) {
   });
 }
 
+// LATER: handle other update fields like startTime
 export async function updateSessionByGroup(groupId, payload) {
   const { status, endTime } = payload;
   const data = {};

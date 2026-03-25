@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { SessionStatus } from '@prisma/client';
-import { IdScm, LocationIdScm, PeopleCountScm, NullGroupIdScm, NameScm, DateTimeScm } from "./base.schema.js";
+import { IdScm, LocationIdScm, PeopleCountScm, NullGroupIdScm, NameScm, DateTimeScm, GroupIdScm } from "./base.schema.js";
 
 export const idSchema = z.object({
   params: z.object({
@@ -31,7 +31,7 @@ export const GetSessionsSchema = z.object({
   })
 });
 
-export const updateSessionSchema = z.object({
+export const UpdateSessionSchema = z.object({
   params: z.object({
     id: IdScm,
   }),
@@ -40,5 +40,15 @@ export const updateSessionSchema = z.object({
     name: NameScm.optional(),
     endTime: DateTimeScm.optional(),
     startTime: DateTimeScm.optional()
+  })
+});
+
+export const UpdateGroupSessionSchema = z.object({
+  params: z.object({
+    id: GroupIdScm,
+  }),
+  body: z.object({
+    status: z.nativeEnum(SessionStatus),
+    endTime: DateTimeScm
   })
 });

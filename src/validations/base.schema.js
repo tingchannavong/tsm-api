@@ -7,7 +7,7 @@ export const IdScm = z.coerce.number().int().positive("Invalid ID");
 
 export const LocationIdScm = z.string().uuid("Invalid location ID");
 
-export const GroupIdScm = z.string().uuid("Invalid group ID");
+export const GroupIdScm = z.string().trim().uuid("Invalid group ID");
 
 export const NullGroupIdScm = z.string().uuid("Invalid group ID").nullable();
 

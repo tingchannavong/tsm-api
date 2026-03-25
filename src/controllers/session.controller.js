@@ -90,7 +90,6 @@ export async function deleteSessionController(req, res, next) {
   }
 }
 
-// TO DO
 export async function updateGroupSessionController(req, res, next) {
    const { id } = req.params;
 
