@@ -11,10 +11,10 @@ import createError from "http-errors";
 
 export async function createSessionsController(req, res, next) {
   try {
-    const responses = await createSessions(req.body);
+    // const responses = await createSessions(req.body);
     res.status(201).json({
       message: "Session(s) created successfully",
-      responses,
+      // responses,
     });
   } catch (error) {
     next(error);

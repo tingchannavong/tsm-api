@@ -3,7 +3,7 @@ import createError from "http-errors";
 
 export async function createSessions(payload) {
   // TO DO: refactor into names: [array]
-  const { name1 = "Guest 1", locationId, groupId, people, pricingId } = payload;
+  const { name1, locationId, groupId, people, pricingId } = payload;
 
   const totalPeople = Number(people) || 1;
   const result = [];
@@ -40,7 +40,7 @@ export async function createSessions(payload) {
 export async function createSession(sessionData) {
   const result = await prisma.sessionRecord.create({
     data: {
-      name: sessionData.name || "Guest",
+      name: sessionData.name,
       locationId: sessionData.locationId || undefined,
       groupId: sessionData.groupId || undefined,
       pricingId: sessionData.pricingId || undefined,
@@ -87,7 +87,8 @@ export async function getSessionByGroupId(groupId) {
 }
 
 export async function updateSessionById(id, payload) {
-  const { status, name, startTime, endTime } = payload;
+  // TO DO: add updated by who
+  const { status, name, startTime, endTime, pricingId } = payload;
 
   const needsTimeValidation = startTime || endTime;
 
@@ -111,6 +112,7 @@ export async function updateSessionById(id, payload) {
   if (name) data.name = name;
   if (startTime) data.startTime = new Date(startTime);
   if (endTime) data.endTime = new Date(endTime);
+  if (pricingId) data.pricingId = pricingId;
 
   if (Object.keys(data).length === 0) {
     throw createError(400, "No valid update fields provided");
@@ -129,6 +131,7 @@ export async function deleteSessionById(id) {
 }
 
 // LATER: handle other update fields like startTime
+// TO DO: add updated by who
 export async function updateSessionByGroup(groupId, payload) {
   const { status, endTime } = payload;
   const data = {};
