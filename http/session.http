@@ -20,9 +20,10 @@ Content-Type: application/json
 {
     "locationId": "c2a40b6a-64c6-4d5c-88c6-471ccdaa327b", 
     "groupId": null, 
-    "name1": "drew",
-    "name2": "",
-    "people": -1,
+    "name1": "celestia",
+    "name2": "dara",
+    "names": ["becky", "yaya", "pat" ],
+    "people": 1,
     "pricingId": 1
 }
 

@@ -6,6 +6,7 @@ import cors from "cors";
 import notFound from "./middlewares/notFound.middleware.js";
 import locationRoutes from "./routes/location.routes.js";
 import orderRoutes from "./routes/order.routes.js";
+import pricingRoutes from "./routes/pricing.routes.js";
 
 const app = express(); 
 const PORT = 9999;
@@ -24,6 +25,7 @@ app.use('/api/sessions', sessionRoutes);
 app.use('/api/orders', orderRoutes);
 
 app.use('/api/locations', locationRoutes);
+app.use('/api/pricings', pricingRoutes);
 
 app.get('/', (re, res) => {
     res.send('welcome to backend API, prisma & JWT login project v0.1.0');

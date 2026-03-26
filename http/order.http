@@ -1,0 +1,24 @@
+@BASE_URL = http://localhost:9999
+@ACCESS_TOKEN = {{login.response.body.access_token}}
+@locationId=c2a40b6a-64c6-4d5c-88c6-471ccdaa327b
+@groupId=9a071ddb-5d94-4d2b-a8ad-1367360cea72
+@LOC2=14f66239-de40-4575-aea1-f7d7405b4695
+
+### Login
+# @name login
+POST {{BASE_URL}}/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "superadmin",
+    "password": "admin88"
+}
+
+### Order Preview
+POST {{BASE_URL}}/api/orders/preview
+Authorization: Bearer {{ACCESS_TOKEN}}
+Content-Type: application/json
+
+{
+    "sessionIds": [9, 10]
+}

@@ -2,16 +2,18 @@ import express from "express";
 import { checkAuth } from "../middlewares/checkAuth.js";
 import { validate } from "../middlewares/validate.js";
 import { idSchema, GetLocationSchema, CreateSessionSchema, GetSessionsSchema, UpdateSessionSchema, UpdateGroupSessionSchema } from "../validations/session.schema.js";
+import { getOrderPreviewController } from "../controllers/order.controller.js";
 
 const orderRoutes = express.Router();
 
-orderRoutes.post('/preview', registerController);
-orderRoutes.post('', loginController);
+// TO DO validate data
+orderRoutes.post('/preview', getOrderPreviewController);
+orderRoutes.post('', (re, res) => {});
 
-orderRoutes.get('', checkAuth, getUserDataController);
-orderRoutes.get('/:id', checkAuth, getUserDataController);
+orderRoutes.get('', checkAuth, (re, res) => {});
+orderRoutes.get('/:id', checkAuth, (re, res) => {});
 
-orderRoutes.patch('/:id', resetPasswordController)
-orderRoutes.delete('/:id', resetPasswordController)
+orderRoutes.patch('/:id', (re, res) => {})
+orderRoutes.delete('/:id', (re, res) => {})
 
 export default orderRoutes;
