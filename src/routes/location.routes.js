@@ -4,6 +4,6 @@ import { createLocationController } from "../controllers/location.controller.js"
 
 const locationRoutes = express.Router();
 
-locationRoutes.post('', createLocationController);
+locationRoutes.post('', checkAuth, createLocationController);
 
 export default locationRoutes;
