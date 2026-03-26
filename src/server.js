@@ -5,6 +5,7 @@ import errorHandler from "./middlewares/errorHandler.middleware.js";
 import cors from "cors";
 import notFound from "./middlewares/notFound.middleware.js";
 import locationRoutes from "./routes/location.routes.js";
+import orderRoutes from "./routes/order.routes.js";
 
 const app = express(); 
 const PORT = 9999;
@@ -20,6 +21,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/sessions', sessionRoutes);
+app.use('/api/orders', orderRoutes);
 
 app.use('/api/locations', locationRoutes);
 
