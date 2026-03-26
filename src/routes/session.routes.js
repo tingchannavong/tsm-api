@@ -10,7 +10,7 @@ router.post('', validate(CreateSessionSchema), createSessionsController);
 router.get('/filter', validate(GetLocationSchema), getFilteredSessionsController);
 
 router.get('', checkAuth, validate(GetSessionsSchema), getAllSessionsController);
-// below not done
+// below done update end time only
 router.patch('/groups/:id', checkAuth, validate(UpdateGroupSessionSchema), updateGroupSessionController);
 
 router.get('/:id', validate(idSchema), getSessionController);
