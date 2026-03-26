@@ -14,14 +14,15 @@ export const GetLocationSchema = z.object({
   }),
 });
 
+// TO DO: refactor names z.array string().min(1)
 export const CreateSessionSchema = z.object({
   body: z.object({
     locationId: LocationIdScm,
     groupId: NullGroupIdScm,
     people: PeopleCountScm,
+    pricingId: IdScm.optional(),
   })
 });
-// TO DO: refactor names z.array string().min(1)
 
 export const GetSessionsSchema = z.object({
   query: z.object({
