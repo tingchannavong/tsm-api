@@ -110,16 +110,9 @@ model Order {
   updatedById  Int?
 }
 
-enum RoundingMethod {
-  EXACT
-  ROUND_UP
-}
-
 model Pricing {
   id                 Int             @id @default(autoincrement())
   name               String          @unique
-  billingIntervalMin Int
-  roundingMethod     RoundingMethod
   price              Decimal         @db.Decimal(10, 2)
   unit               Unit?           @relation(fields: [unitId], references: [id])
   unitId             Int?
