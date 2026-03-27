@@ -164,22 +164,3 @@ export async function updateSessionByGroup(groupId, payload) {
 }
 
 console.log(new Date("2026-03-24 18:15:00").toISOString());
-
-//  // check end time more than start time logic
-//   if (startTime && endTime) {
-//     if (endTime < startTime) {
-//       throw createError(400, "End time is less than start time");
-//     }
-//     data.startTime = startTime;
-//     data.endTime = endTime;
-//   } else if (startTime) {
-//     if (currentSession.endTime < startTime) {
-//       throw createError(400, "End time is less than start time");
-//     }
-//     data.startTime = startTime;
-//   } else if (endTime) {
-//     if (endTime < currentSession.startTime) {
-//       throw createError(400, "End time is less than start time");
-//     }
-//     data.endTime = endTime;
-//   }
