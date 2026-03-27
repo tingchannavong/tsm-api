@@ -2,7 +2,7 @@ import { convertDateTimeTo24HrTime, convertMinToHour } from "../utils/time.js";
 
 export function calculateTotalPrice(unit, price) {
   const total = unit * price;
-  return total;
+  return Number(total.toFixed(2));
 }
 
 export function calculateSessionLineItems(sessions, pricingPolicy) {
@@ -17,9 +17,9 @@ export function calculateSessionLineItems(sessions, pricingPolicy) {
     line.durationMin = session.durationMin;
     line.price = pricingPolicy.price;
     line.lineTotal = calculateTotalPrice(line.durationMin, line.price);
-    // get unit label
-    // get currency
-
+    line.currencyCode = pricingPolicy.currency.code;
+    line.unit = pricingPolicy.unit.name;
+    line.basePrice = pricingPolicy.price;
     items.push(line);
   });
 
@@ -27,7 +27,7 @@ export function calculateSessionLineItems(sessions, pricingPolicy) {
 }
 
 // line aggregate by same duration logic, add quantity field, subtotal calc
-export function calculateOrderLineItems(sessionItems) {
+export function calculatePreviewOrderLineItems(sessionItems) {
   const timeGroup = sessionItems.reduce((prev, cur) => {
     const startTime = convertDateTimeTo24HrTime(cur.startTime);
     if (!prev[`${cur.durationMin}-${startTime}`]) {
@@ -49,8 +49,12 @@ export function calculateOrderLineItems(sessionItems) {
     line.quantity = timeGroup[key].length;
     line.unitPrice = timeGroup[key][0].lineTotal;
     line.subTotal = calculateTotalPrice(line.quantity, line.unitPrice);
-    // unit
-    // currency
+    line.currencyCode = timeGroup[key][0].currencyCode;
+    line.unit = timeGroup[key][0].unit;
+    line.durationMin = timeGroup[key][0].durationMin;
+    line.basePrice = timeGroup[key][0].basePrice;
+    line.sessionIds = timeGroup[key].map( session => session.sessionId );
+
     orderItems.push(line);
   });
   return orderItems;

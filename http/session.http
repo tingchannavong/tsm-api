@@ -3,7 +3,7 @@
 @locationId=c2a40b6a-64c6-4d5c-88c6-471ccdaa327b
 @groupId=9a071ddb-5d94-4d2b-a8ad-1367360cea72
 @LOC2=14f66239-de40-4575-aea1-f7d7405b4695
-@RockyGROUP=51cc8934-e950-4300-974f-b67ce527285c
+@RockyGROUP=9a071ddb-5d94-4d2b-a8ad-1367360cea72
 ### Login
 # @name login
 POST {{BASE_URL}}/api/auth/login
@@ -20,7 +20,7 @@ GET {{BASE_URL}}/api/sessions/filter?locationId={{locationId}}
 ### Get all sessions
 # locationId={{locationId}}&groupId={{groupId}}
 # GET {{BASE_URL}}/api/sessions
-GET {{BASE_URL}}/api/sessions?status=ENDED
+GET {{BASE_URL}}/api/sessions?status=BILLED
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Create session
@@ -42,7 +42,7 @@ GET {{BASE_URL}}/api/sessions/31
 
 
 ### Update session by Id
-PATCH {{BASE_URL}}/api/sessions/34
+PATCH {{BASE_URL}}/api/sessions/30
 Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 

@@ -84,7 +84,7 @@ model OrderDetail {
   subTotal     Decimal         @db.Decimal(10, 2)
   currencyCode String          @db.Char(3)
   unit         String?
-  basePrice    Decimal?         @db.Decimal(10, 2)
+  basePrice    Decimal?        @db.Decimal(10, 2)
   durationMin  Int?
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt @db.Timestamp(0)
@@ -100,9 +100,10 @@ enum OrderStatus {
 
 model Order {
   id           Int           @id @default(autoincrement())
+  grandTotal   Decimal       @db.Decimal(10, 2)
   discount     Decimal       @db.Decimal(10, 2)
-  total        Decimal       @db.Decimal(10, 2)
-  status       OrderStatus
+  netTotal     Decimal       @db.Decimal(10, 2)
+  status       OrderStatus   @default(PAID)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt @db.Timestamp(0)
   orderDetails OrderDetail[]

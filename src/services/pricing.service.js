@@ -4,6 +4,14 @@ import createError from "http-errors";
 export async function getPricingById(id) {
   const result = await prisma.pricing.findUnique({
     where: { id },
+    include: {
+      currency: {
+        select: {code: true}
+      },
+      unit: {
+        select: {name: true}
+      }
+    }
   });
 
   return result;
