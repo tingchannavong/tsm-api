@@ -14,6 +14,15 @@ Content-Type: application/json
     "password": "admin88"
 }
 
+### Get filtered session
+GET {{BASE_URL}}/api/sessions/filter?locationId={{locationId}}
+
+### Get all sessions
+# locationId={{locationId}}&groupId={{groupId}}
+# GET {{BASE_URL}}/api/sessions
+GET {{BASE_URL}}/api/sessions?status=ENDED
+Authorization: Bearer {{ACCESS_TOKEN}}
+
 ### Create session
 POST {{BASE_URL}}/api/sessions
 Content-Type: application/json
@@ -27,15 +36,6 @@ Content-Type: application/json
     "people": 1,
     "pricingId": 1
 }
-
-### Get filtered session
-GET {{BASE_URL}}/api/sessions/filter?locationId={{locationId}}
-
-### Get all sessions
-# locationId={{locationId}}&groupId={{groupId}}
-# GET {{BASE_URL}}/api/sessions
-GET {{BASE_URL}}/api/sessions?status=ENDED
-Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Get session by Id
 GET {{BASE_URL}}/api/sessions/31

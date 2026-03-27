@@ -30,7 +30,6 @@ export function calculateSessionLineItems(sessions, pricingPolicy) {
 export function calculateOrderLineItems(sessionItems) {
   const timeGroup = sessionItems.reduce((prev, cur) => {
     const startTime = convertDateTimeTo24HrTime(cur.startTime);
-    console.log(`${cur.durationMin}-${startTime}`)
     if (!prev[`${cur.durationMin}-${startTime}`]) {
       prev[`${cur.durationMin}-${startTime}`] = [cur];
     } else {

@@ -20,5 +20,15 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-    "sessionIds": [9, 10]
+    "sessionIds": [9, 10, 30, 31]
+}
+
+### Create 
+POST {{BASE_URL}}/api/orders
+Authorization: Bearer {{ACCESS_TOKEN}}
+Content-Type: application/json
+
+{
+    "sessionIds": [9, 10, 30, 31],
+    "discount": 100
 }
