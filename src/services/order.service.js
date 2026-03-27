@@ -46,48 +46,39 @@ export async function getSessionsByIds(sessionIds) {
 }
 
 export async function createOrder(sessionIds, discount) {
-  const sessions = await getSessionsByIds(sessionIds);
+  try {
+    const orderPreview = await getOrderPreviewBySession(sessionIds);
 
-  const orderPreview = await getOrderPreviewBySession(sessionIds);
+    const { grandTotal, items } = orderPreview;
+    const netTotal = grandTotal - discount;
 
-  const { grandTotal, items } = orderPreview;
-  const netTotal = grandTotal - discount;
+    const result = await prisma.$transaction(async (tx) => {
+      const newOrder = await prisma.order.create({
+        data: {
+          grandTotal,
+          discount,
+          netTotal,
+        },
+      });
+      console.log(newOrder);
+      for (const lineItem of items) {
+        const newOrderDetail = await createOrderDetail(newOrder.id, lineItem);
+        console.log("order detail", newOrderDetail);
+      }
+      return newOrder;
+    });
 
-  // create order
-  const newOrder = await prisma.order.create({
-    data: {
+    return {
+      orderId: result.id,
+      items,
       grandTotal,
       discount,
       netTotal,
-    },
-  });
-
-  console.log(newOrder);
-
-  items.forEach(async (lineItem) => {
-    // create order detail
-    const newOrderDetail = await createOrderDetail(newOrder.id, lineItem);
-    // update sessions status and orderdetail id at session record
-    lineItem.sessionIds.forEach(async (id) => {
-      const data = {
-        status: "BILLED",
-        orderDetailId: newOrderDetail.id,
-      };
-      const record = await updateSessionById(id, data);
-      console.log('session', record);
-    });
-
-      console.log('order detail', newOrderDetail)
-
-  });
-
-
-  return {
-    items,
-    grandTotal,
-    discount,
-    netTotal,
-  };
+    };
+  } catch (error) {
+    console.log(error);
+    throw createError(400, `Order creation failed: ${error.message}`);
+  }
 }
 
 export async function createOrderDetail(orderId, lineItemData) {
@@ -103,7 +94,7 @@ export async function createOrderDetail(orderId, lineItemData) {
   } = lineItemData;
 
   return await prisma.orderDetail.create({
-    data: {orderDetails: {
+    data: {
       displayName,
       quantity,
       unitPrice,
@@ -113,6 +104,19 @@ export async function createOrderDetail(orderId, lineItemData) {
       durationMin,
       basePrice,
       orderId,
-    }}
+      sessions: {
+        connect: lineItemData.sessionIds.map((id) => ({ id })),
+      },
+    },
   });
 }
+
+// update sessions status and orderdetail id at session record
+// lineItem.sessionIds.forEach(async (id) => {
+//   const data = {
+//     status: "BILLED",
+//     orderDetailId: newOrderDetail.id,
+//   };
+//   const record = await updateSessionById(id, data);
+//   console.log('session', record);
+// });
