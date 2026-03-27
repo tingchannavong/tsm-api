@@ -53,7 +53,7 @@ export async function createOrder(sessionIds, discount) {
     const netTotal = grandTotal - discount;
 
     const result = await prisma.$transaction(async (tx) => {
-      const newOrder = await prisma.order.create({
+      const newOrder = await tx.order.create({
         data: {
           grandTotal,
           discount,
@@ -62,7 +62,7 @@ export async function createOrder(sessionIds, discount) {
       });
       console.log(newOrder);
       for (const lineItem of items) {
-        const newOrderDetail = await createOrderDetail(newOrder.id, lineItem);
+        const newOrderDetail = await createOrderDetail(newOrder.id, lineItem, tx);
         console.log("order detail", newOrderDetail);
       }
       return newOrder;
@@ -81,7 +81,8 @@ export async function createOrder(sessionIds, discount) {
   }
 }
 
-export async function createOrderDetail(orderId, lineItemData) {
+export async function createOrderDetail(orderId, lineItemData, tx) {
+  const db = tx || prisma;
   const {
     displayName,
     quantity,
@@ -93,7 +94,7 @@ export async function createOrderDetail(orderId, lineItemData) {
     basePrice,
   } = lineItemData;
 
-  return await prisma.orderDetail.create({
+  return await db.orderDetail.create({
     data: {
       displayName,
       quantity,
@@ -110,13 +111,3 @@ export async function createOrderDetail(orderId, lineItemData) {
     },
   });
 }
-
-// update sessions status and orderdetail id at session record
-// lineItem.sessionIds.forEach(async (id) => {
-//   const data = {
-//     status: "BILLED",
-//     orderDetailId: newOrderDetail.id,
-//   };
-//   const record = await updateSessionById(id, data);
-//   console.log('session', record);
-// });
