@@ -68,7 +68,7 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Update session by Group
 # TO DO: add start time patch later
-PATCH {{BASE_URL}}/api/sessions/groups/{{NEWGROUP}}
+PATCH {{BASE_URL}}/api/sessions/groups/{{RockyGROUP}}
 Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
