@@ -77,17 +77,20 @@ model SessionRecord {
 }
 
 model OrderDetail {
-  id          Int             @id @default(autoincrement())
-  displayName String
-  quantity    Int
-  unitPrice   Decimal         @db.Decimal(10, 2)
-  unit        String
-  subTotal    Decimal         @db.Decimal(10, 2)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt @db.Timestamp(0)
-  order       Order           @relation(fields: [orderId], references: [id])
-  orderId     Int
-  sessions    SessionRecord[]
+  id           Int             @id @default(autoincrement())
+  displayName  String
+  quantity     Int
+  unitPrice    Decimal         @db.Decimal(10, 2)
+  subTotal     Decimal         @db.Decimal(10, 2)
+  currencyCode String          @db.Char(3)
+  unit         String?
+  basePrice    Decimal?         @db.Decimal(10, 2)
+  durationMin  Int?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt @db.Timestamp(0)
+  order        Order           @relation(fields: [orderId], references: [id])
+  orderId      Int
+  sessions     SessionRecord[]
 }
 
 enum OrderStatus {
