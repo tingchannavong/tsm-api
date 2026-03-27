@@ -79,15 +79,13 @@ model SessionRecord {
 model OrderDetail {
   id             Int             @id @default(autoincrement())
   quantity       Int
-  priceAtBilling Decimal         @db.Decimal(10, 2)
-  unitAtBilling  String
+  unitPrice Decimal         @db.Decimal(10, 2)
+  unit  String
   subTotal       Decimal         @db.Decimal(10, 2)
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt @db.Timestamp(0)
   order          Order           @relation(fields: [orderId], references: [id])
   orderId        Int
-  pricing        Pricing?        @relation(fields: [pricingId], references: [id])
-  pricingId      Int?
   sessions       SessionRecord[]
 }
 
@@ -121,7 +119,6 @@ model Pricing {
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt @db.Timestamp(0)
   sessions           SessionRecord[]
-  orderDetails       OrderDetail[]
 }
 
 model Unit {
