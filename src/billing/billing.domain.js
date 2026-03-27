@@ -60,5 +60,5 @@ export function calculateOrderLineItems(sessionItems) {
 export function calculateOrderGrandTotal(orderLineItems) {
   let total = 0;
   orderLineItems.forEach((line) => (total += line.subTotal));
-  return total;
+  return Number(total.toFixed(2));
 }
