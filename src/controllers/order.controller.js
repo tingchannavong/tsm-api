@@ -7,7 +7,7 @@ export async function getOrderPreviewController(req, res, next) {
   try {
     const responses = await getOrderPreviewBySession(sessionIds);
     res.status(200).json({
-      message: "Order preview by retrieved successfully.",
+      message: "Order preview retrieved successfully.",
       responses,
     });
   } catch (error) {

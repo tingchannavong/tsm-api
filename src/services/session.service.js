@@ -86,6 +86,7 @@ export async function getSessionByGroupId(groupId) {
   });
 }
 
+// TO DO: lock session after STATUS ==- BILLED no edits allowed
 export async function updateSessionById(id, payload) {
   // TO DO: add updated by who
   const { status, name, startTime, endTime, pricingId } = payload;
@@ -130,6 +131,7 @@ export async function deleteSessionById(id) {
   });
 }
 
+// TO DO: lock session after STATUS ==- BILLED no edits allowed
 // LATER: handle other update fields like startTime
 // TO DO: add updated by who
 export async function updateSessionByGroup(groupId, payload) {
