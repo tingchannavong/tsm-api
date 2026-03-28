@@ -45,7 +45,10 @@ export async function getSessionsByIds(sessionIds) {
   return result;
 }
 
-export async function createOrder(sessionIds, discount) {
+export async function createOrder(payload) {
+
+  const { sessionIds, discount, createdById } = payload;
+
   try {
     const orderPreview = await getOrderPreviewBySession(sessionIds);
 
@@ -58,6 +61,9 @@ export async function createOrder(sessionIds, discount) {
           grandTotal,
           discount,
           netTotal,
+          createdBy: {
+            connect: {createdById}
+          }
         },
       });
       console.log(newOrder);
@@ -111,3 +117,5 @@ export async function createOrderDetail(orderId, lineItemData, tx) {
     },
   });
 }
+
+// GET ORDER WITH ORDER DETAILS QUERY?

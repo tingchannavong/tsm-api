@@ -29,6 +29,11 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-    "sessionIds": [32, 33],
-    "discount": 50
+    "sessionIds": [34, 35],
+    "discount": 20,
+    "createdById": 2
 }
+
+### Get orders
+GET {{BASE_URL}}/api/orders
+Authorization: Bearer {{ACCESS_TOKEN}}
