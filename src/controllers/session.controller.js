@@ -4,7 +4,7 @@ import {
   getAllSessions,
   getSessionById,
   getSessionsByFilter,
-  updateSessionByGroup,
+  updateSessionByField,
   updateSessionById,
 } from "../services/session.service.js";
 import createError from "http-errors";
@@ -25,7 +25,7 @@ export async function getFilteredSessionsController(req, res, next) {
   const { locationId } = req.query;
 
   try {
-    const responses = await getSessionsByFilter(locationId);
+    const responses = await getSessionsByFilter({locationId});
     res.status(200).json({
       message: "Sessions by location retrieved successfully.",
       responses,
@@ -94,7 +94,7 @@ export async function updateGroupSessionController(req, res, next) {
    const { id } = req.params;
 
   try {
-    const responses = await updateSessionByGroup(id, req.body);
+    const responses = await updateSessionByField("groupId", id, req.body);
     res.status(200).json({
       message: "Group session updated successfully.",
       responses,

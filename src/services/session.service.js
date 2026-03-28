@@ -52,7 +52,7 @@ export async function createSession(sessionData) {
 
 export async function getSessionsByFilter(filters) {
   const result = await prisma.sessionRecord.findMany({
-    where: { filters },
+    where: filters ,
   });
 
   return result;
@@ -80,8 +80,41 @@ export async function getSessionById(id) {
 }
 
 export async function getSessionByGroupId(groupId) {
-  return await prisma.sessionRecord.findFirst({
-    where: { groupId },
+  return await prisma.sessionRecord.findMany({
+    where: groupId ,
+  });
+}
+
+// LATER: handle other update fields like startTime
+// TO DO: add updated by who
+export async function updateSessionByField(field, info, payload, tx) {
+  const db = tx || prisma;
+
+  const { status, endTime } = payload;
+
+  const isBilled = await getSessionsByFilter({status: 'BILLED', id: info});
+  if (!isBilled) throw createError(404, "Session(s) not found");
+  if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
+
+  const data = {};
+  if (status) data.status = status;
+
+  if (endTime) {
+    const finalEnd = new Date(endTime);
+
+    if (finalEnd < sampleSession.startTime) {
+      throw createError(400, "End time cannot be earlier than start time");
+    }
+    data.endTime = new Date(endTime);
+  }
+
+  if (Object.keys(data).length === 0) {
+    throw createError(400, "No valid update fields provided");
+  }
+
+  return await db.sessionRecord.updateMany({
+    where: { [field]: info },
+    data,
   });
 }
 
@@ -131,37 +164,6 @@ export async function deleteSessionById(id) {
   });
 }
 
-// LATER: handle other update fields like startTime
-// TO DO: add updated by who
-export async function updateSessionByGroup(groupId, payload) {
-  const { status, endTime } = payload;
 
-  const sampleSession = await getSessionByGroupId(groupId);
-
-  if (!sampleSession) throw createError(404, "Session not found");
-  if (sampleSession.status === "BILLED")
-    throw createError(403, "Cannot edit already billed session");
-
-  const data = {};
-  if (status) data.status = status;
-
-  if (endTime) {
-    const finalEnd = new Date(endTime);
-
-    if (finalEnd < sampleSession.startTime) {
-      throw createError(400, "End time cannot be earlier than start time");
-    }
-    data.endTime = new Date(endTime);
-  }
-
-  if (Object.keys(data).length === 0) {
-    throw createError(400, "No valid update fields provided");
-  }
-
-  return await prisma.sessionRecord.updateMany({
-    where: { groupId },
-    data,
-  });
-}
 
 console.log(new Date("2026-03-24 18:15:00").toISOString());

@@ -6,7 +6,7 @@ import {
   calculateSessionLineItems,
   calculatePreviewOrderLineItems,
 } from "../billing/billing.domain.js";
-import { getSessionsByFilter, updateSessionById } from "./session.service.js";
+import { getSessionsByFilter, updateSessionByField, updateSessionById } from "./session.service.js";
 
 export async function getOrderPreviewBySession(sessionIds) {
   // session records of each id
@@ -46,11 +46,10 @@ export async function getSessionsByIds(sessionIds) {
 }
 
 export async function createOrder(payload) {
-  const { sessionIds, discount, createdById } = payload;
+  const { sessionIds, discount = 0, createdById } = payload;
 
   try {
-    const isBilled = await getSessionsByFilter({status: 'BILLED'});
-    
+    const isBilled = await getSessionsByFilter({status: 'BILLED', id: {in: sessionIds}});
     if (!isBilled) throw createError(404, "Session(s) not found");
     if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
 
@@ -66,7 +65,7 @@ export async function createOrder(payload) {
           discount,
           netTotal,
           createdBy: {
-            connect: { createdById },
+            connect: { id: createdById },
           },
         },
       });
@@ -76,6 +75,8 @@ export async function createOrder(payload) {
       for (const lineItem of items) {
         const newOrderDetail = await createOrderDetail(newOrder.id, lineItem, tx);
         // update sessionRecord to BILLED
+        const updatedSessions = await updateSessionByField("id", {in: lineItem.sessionIds}, {status: "BILLED"}, tx);
+        console.log("updated sessions", updatedSessions);
         console.log("order detail", newOrderDetail);
       }
       return newOrder;

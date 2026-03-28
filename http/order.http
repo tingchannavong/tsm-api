@@ -20,7 +20,7 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-    "sessionIds": [9, 10, 30, 31]
+    "sessionIds": [40, 41, 42, 43]
 }
 
 ### Create order
@@ -29,8 +29,7 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-    "sessionIds": [34, 35],
-    "discount": 20,
+    "sessionIds": [38, 39],
     "createdById": 2
 }
 
