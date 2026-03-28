@@ -16,3 +16,5 @@ export const PeopleCountScm = z.number().int().positive("Invalid people number")
 export const NameScm = z.string().min(1);
 
 export const DateTimeScm = z.string().datetime();
+
+export const PriceScm = z.coerce.number().positive("Invalid Number");
