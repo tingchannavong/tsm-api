@@ -92,8 +92,7 @@ export async function updateSessionByField(field, info, payload, tx) {
 
   const { status, endTime } = payload;
 
-  const isBilled = await getSessionsByFilter({status: 'BILLED', id: info});
-  if (!isBilled) throw createError(404, "Session(s) not found");
+  const isBilled = await getSessionsByFilter({status: 'BILLED', [field]: info});
   if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
 
   const data = {};
@@ -122,11 +121,7 @@ export async function updateSessionById(id, payload) {
   // TO DO: add updated by who
   const { status, name, startTime, endTime, pricingId } = payload;
 
-  const currentSession = await getSessionById(id);
-
-  if (!currentSession) throw createError(404, "Session not found");
-  if (currentSession.status === "BILLED")
-    throw createError(403, "Cannot edit already billed session");
+  await validateBilledSession([id]);
 
   const needsTimeValidation = startTime || endTime;
 
@@ -164,6 +159,12 @@ export async function deleteSessionById(id) {
   });
 }
 
+export async function validateBilledSession(sessionIds) {
+  const isBilled = await getSessionsByFilter({status: 'BILLED', id: {in: sessionIds}});
+  if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
+  // if (!isBilled) throw createError(404, "Session(s) not found");
 
+  return true;
+}
 
 console.log(new Date("2026-03-24 18:15:00").toISOString());

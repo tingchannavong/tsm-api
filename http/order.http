@@ -29,7 +29,7 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-    "sessionIds": [38, 39],
+    "sessionIds": [44, 45],
     "createdById": 2
 }
 

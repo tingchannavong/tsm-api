@@ -6,11 +6,13 @@ import {
   calculateSessionLineItems,
   calculatePreviewOrderLineItems,
 } from "../billing/billing.domain.js";
-import { getSessionsByFilter, updateSessionByField, updateSessionById } from "./session.service.js";
+import { getSessionsByFilter, updateSessionByField, updateSessionById, validateBilledSession } from "./session.service.js";
 
 export async function getOrderPreviewBySession(sessionIds) {
   // session records of each id
   const sessions = await getSessionsByIds(sessionIds);
+
+  if (sessions.length === 0) throw createError(404, "No sessions found");
 
   // FUTURE FEATURE: filter out same pricing // console.log("pricing policy", pricingPolicy);
   // get first person's Id
@@ -49,9 +51,7 @@ export async function createOrder(payload) {
   const { sessionIds, discount = 0, createdById } = payload;
 
   try {
-    const isBilled = await getSessionsByFilter({status: 'BILLED', id: {in: sessionIds}});
-    if (!isBilled) throw createError(404, "Session(s) not found");
-    if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
+    await validateBilledSession(sessionIds);
 
     const orderPreview = await getOrderPreviewBySession(sessionIds);
 
