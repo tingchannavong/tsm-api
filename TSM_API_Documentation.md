@@ -13,7 +13,7 @@
 | 6   | POST           | `/api/auth/forgot-password`       | -    | -           | -                                        | {email}                                                        |
 | 7   | POST           | `/api/auth/reset-password/:token` | -    | resetToken  | -                                        | {password, confirmPassword}                                    |
 |     | **Sessions**   |                                   |      |             |                                          |                                                                |
-| 8   | POST           | `/api/sessions`                   | -    | -           | -                                        | {locationId, groupId?, name, people, pricingId}                |
+| 8   | POST           | `/api/sessions`                   | -    | -           | -                                        | {locationId, groupId?, names, people, pricingId}                |
 | 9   | GET            | `/api/sessions`                   | y    | -           | {groupId, locationId, status}            | -                                                              |
 | 9.1 | GET            | `/api/sessions/filter`            | -    | -           | {locationId}                             | -                                                              |
 | 10  | GET            | `/api/sessions/:id`               | -    | sessionId   | -                                        | -                                                              |
