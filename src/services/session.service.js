@@ -3,16 +3,14 @@ import createError from "http-errors";
 
 export async function createSessions(payload) {
   // TO DO: refactor into names: [array]
-  const { name1, locationId, groupId, people, pricingId } = payload;
+  const { names = ['Guest 1'], locationId, groupId, people, pricingId } = payload;
 
   const totalPeople = Number(people) || 1;
   const result = [];
 
-  // TO ADD: auto-generate names feature, inclu name1
-
   // Create first session
   const first = await createSession({
-    name: name1,
+    name: names[0],
     locationId,
     groupId,
     pricingId,
@@ -21,9 +19,10 @@ export async function createSessions(payload) {
   const newGroupId = first.groupId;
   result.push(first);
 
+  let indexOfName = 1;
   // For group, get group id from response, create the rest
   for (let i = 2; i <= totalPeople; i++) {
-    const eachName = payload[`name${i}`];
+    const eachName = names[indexOfName] ? names[indexOfName] : `Guest ${indexOfName+1}`;
 
     const session = await createSession({
       name: eachName,
@@ -32,6 +31,7 @@ export async function createSessions(payload) {
       pricingId,
     });
     result.push(session);
+    indexOfName++;
   }
 
   return result;

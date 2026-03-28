@@ -20,7 +20,7 @@ GET {{BASE_URL}}/api/sessions/filter?locationId={{locationId}}
 ### Get all sessions
 # locationId={{locationId}}&groupId={{groupId}}
 # GET {{BASE_URL}}/api/sessions
-GET {{BASE_URL}}/api/sessions?status=ENDED
+GET {{BASE_URL}}/api/sessions?status=BILLED
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Create session
@@ -30,18 +30,15 @@ Content-Type: application/json
 {
     "locationId": "c2a40b6a-64c6-4d5c-88c6-471ccdaa327b", 
     "groupId": null, 
-    "name1": "mac",
-    "name2": "samsung",
-    "names": ["becky", "yaya", "pat" ],
-    "people": 3,
+    "people": 4,
     "pricingId": 1
 }
 
 ### Get session by Id
-GET {{BASE_URL}}/api/sessions/39
+GET {{BASE_URL}}/api/sessions/45
 
 ### Update session by Id
-PATCH {{BASE_URL}}/api/sessions/43
+PATCH {{BASE_URL}}/api/sessions/38
 Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
@@ -65,7 +62,7 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Update session by Group
 # TO DO: add start time patch later
-PATCH {{BASE_URL}}/api/sessions/groups/05b78d8b-1e83-43cc-9839-5873be495ddb
+PATCH {{BASE_URL}}/api/sessions/groups/f5ea9395-3f72-4729-9e2f-00ea36b70aac
 Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
