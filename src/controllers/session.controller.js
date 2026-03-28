@@ -3,7 +3,7 @@ import {
   deleteSessionById,
   getAllSessions,
   getSessionById,
-  getSessionsByLocation,
+  getSessionsByFilter,
   updateSessionByGroup,
   updateSessionById,
 } from "../services/session.service.js";
@@ -11,10 +11,10 @@ import createError from "http-errors";
 
 export async function createSessionsController(req, res, next) {
   try {
-    // const responses = await createSessions(req.body);
+    const responses = await createSessions(req.body);
     res.status(201).json({
       message: "Session(s) created successfully",
-      // responses,
+      responses,
     });
   } catch (error) {
     next(error);
@@ -25,7 +25,7 @@ export async function getFilteredSessionsController(req, res, next) {
   const { locationId } = req.query;
 
   try {
-    const responses = await getSessionsByLocation(locationId);
+    const responses = await getSessionsByFilter(locationId);
     res.status(200).json({
       message: "Sessions by location retrieved successfully.",
       responses,
@@ -52,10 +52,10 @@ export async function getSessionController(req, res, next) {
   const { id } = req.params;
 
   try {
-    const resp = await getSessionById(id);
+    const responses = await getSessionById(id);
     res.status(200).json({
       message: "Session retrieved successfully.",
-      resp,
+      responses,
     });
   } catch (error) {
     next(error);
@@ -66,10 +66,10 @@ export async function updateSessionController(req, res, next) {
   const { id } = req.params;
 
   try {
-    const resp = await updateSessionById(id, req.body);
+    const responses = await updateSessionById(id, req.body);
     res.status(200).json({
       message: "Session updated successfully.",
-      resp,
+      responses,
     });
   } catch (error) {
     next(error);
@@ -80,10 +80,10 @@ export async function deleteSessionController(req, res, next) {
   const { id } = req.params;
 
   try {
-    const resp = await deleteSessionById(id);
+    const responses = await deleteSessionById(id);
     res.status(200).json({
       message: "Session deleted successfully.",
-      resp,
+      responses,
     });
   } catch (error) {
     next(error);
@@ -94,10 +94,10 @@ export async function updateGroupSessionController(req, res, next) {
    const { id } = req.params;
 
   try {
-    const resp = await updateSessionByGroup(id, req.body);
+    const responses = await updateSessionByGroup(id, req.body);
     res.status(200).json({
       message: "Group session updated successfully.",
-      resp,
+      responses,
     });
   } catch (error) {
     next(error);
