@@ -88,7 +88,7 @@ model OrderDetail {
   durationMin  Int?
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt @db.Timestamp(0)
-  order        Order           @relation(fields: [orderId], references: [id])
+  order        Order           @relation(fields: [orderId], references: [id]) // onDelete: Cascade maybe?
   orderId      Int
   sessions     SessionRecord[]
 }
@@ -96,6 +96,7 @@ model OrderDetail {
 enum OrderStatus {
   PAID
   UNPAID
+  CANCELLED
 }
 
 model Order {
