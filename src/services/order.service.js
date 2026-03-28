@@ -6,7 +6,7 @@ import {
   calculateSessionLineItems,
   calculatePreviewOrderLineItems,
 } from "../billing/billing.domain.js";
-import { updateSessionById } from "./session.service.js";
+import { getSessionsByFilter, updateSessionById } from "./session.service.js";
 
 export async function getOrderPreviewBySession(sessionIds) {
   // session records of each id
@@ -46,10 +46,14 @@ export async function getSessionsByIds(sessionIds) {
 }
 
 export async function createOrder(payload) {
-
   const { sessionIds, discount, createdById } = payload;
 
   try {
+    const isBilled = await getSessionsByFilter({status: 'BILLED'});
+    
+    if (!isBilled) throw createError(404, "Session(s) not found");
+    if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
+
     const orderPreview = await getOrderPreviewBySession(sessionIds);
 
     const { grandTotal, items } = orderPreview;
@@ -62,13 +66,16 @@ export async function createOrder(payload) {
           discount,
           netTotal,
           createdBy: {
-            connect: {createdById}
-          }
+            connect: { createdById },
+          },
         },
       });
-      console.log(newOrder);
+      console.log('newOrder', newOrder);
+      console.log('items', items);
+
       for (const lineItem of items) {
         const newOrderDetail = await createOrderDetail(newOrder.id, lineItem, tx);
+        // update sessionRecord to BILLED
         console.log("order detail", newOrderDetail);
       }
       return newOrder;
@@ -118,4 +125,62 @@ export async function createOrderDetail(orderId, lineItemData, tx) {
   });
 }
 
-// GET ORDER WITH ORDER DETAILS QUERY?
+export async function getAllOrdersWithDetails(query) {
+  const { status, createdById, updatedById } = query;
+
+  const filters = {};
+  if (status) filters.status = status;
+  if (createdById) filters.createdById = createdById;
+  if (updatedById) filters.updatedById = updatedById;
+
+  const result = await prisma.order.findMany({
+    where: filters,
+    include: {
+      orderDetails: true,
+    },
+  });
+
+  return result;
+}
+
+export async function getOrderById(id) {
+  const result = await prisma.order.findUnique({
+    where: { id },
+    include: {
+      orderDetails: true,
+    },
+  });
+
+  if (result === null) throw createError(404, "Order not found")
+
+  return result;
+}
+
+export async function updateOrderById(id, payload) {
+
+   const { status, updatedById } = payload;
+
+   // if you wanna patch discount, you gotta recalc get(grandTotal) - discount = netTotal (update both discount and netTotal)
+
+  const data = {};
+  if (status) data.status = status;
+  if (updatedById) data.updatedById = updatedById;
+
+   const result = await prisma.order.update({
+    where: {id},
+    data
+  });
+
+  return result;
+}
+
+export async function deleteOrderById(id, role) {
+  // CHECK IF ADMIN CAN DELETE
+  if (role !== 'ADMIN') throw createError(403, `No permission to delete`); 
+
+  const result = await prisma.order.delete({
+    where: {id}
+  });
+
+  return result;
+}

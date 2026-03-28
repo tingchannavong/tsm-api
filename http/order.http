@@ -35,5 +35,23 @@ Content-Type: application/json
 }
 
 ### Get orders
-GET {{BASE_URL}}/api/orders
+GET {{BASE_URL}}/api/orders?status=PAID
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+### Get order by id
+GET {{BASE_URL}}/api/orders/2
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+### Update order by id
+PATCH {{BASE_URL}}/api/orders/1
+Authorization: Bearer {{ACCESS_TOKEN}}
+Content-Type: application/json
+
+{
+    "status": "UNPAID",
+    "updatedById": 2
+}
+
+### Delete order by id
+DELETE {{BASE_URL}}/api/orders/2
 Authorization: Bearer {{ACCESS_TOKEN}}

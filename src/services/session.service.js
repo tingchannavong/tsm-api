@@ -50,9 +50,9 @@ export async function createSession(sessionData) {
   return result;
 }
 
-export async function getSessionsByLocation(locationId) {
+export async function getSessionsByFilter(filters) {
   const result = await prisma.sessionRecord.findMany({
-    where: { locationId },
+    where: { filters },
   });
 
   return result;
@@ -81,7 +81,7 @@ export async function getSessionById(id) {
 
 export async function getSessionByGroupId(groupId) {
   return await prisma.sessionRecord.findFirst({
-    where: { groupId }
+    where: { groupId },
   });
 }
 
@@ -92,7 +92,8 @@ export async function updateSessionById(id, payload) {
   const currentSession = await getSessionById(id);
 
   if (!currentSession) throw createError(404, "Session not found");
-  if (currentSession.status === 'BILLED') throw createError(403, "Cannot edit already billed session");
+  if (currentSession.status === "BILLED")
+    throw createError(403, "Cannot edit already billed session");
 
   const needsTimeValidation = startTime || endTime;
 
@@ -130,16 +131,16 @@ export async function deleteSessionById(id) {
   });
 }
 
-// TO DO: lock session after STATUS ==- BILLED no edits allowed
 // LATER: handle other update fields like startTime
 // TO DO: add updated by who
 export async function updateSessionByGroup(groupId, payload) {
   const { status, endTime } = payload;
 
-   const sampleSession = await getSessionByGroupId(groupId);
+  const sampleSession = await getSessionByGroupId(groupId);
 
   if (!sampleSession) throw createError(404, "Session not found");
-  if (sampleSession.status === 'BILLED') throw createError(403, "Cannot edit already billed session");
+  if (sampleSession.status === "BILLED")
+    throw createError(403, "Cannot edit already billed session");
 
   const data = {};
   if (status) data.status = status;
