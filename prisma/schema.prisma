@@ -102,7 +102,7 @@ enum OrderStatus {
 model Order {
   id           Int           @id @default(autoincrement())
   grandTotal   Decimal       @db.Decimal(10, 2)
-  discount     Decimal       @db.Decimal(10, 2)
+  discount     Decimal?       @db.Decimal(10, 2)
   netTotal     Decimal       @db.Decimal(10, 2)
   status       OrderStatus   @default(PAID)
   createdAt    DateTime      @default(now())
