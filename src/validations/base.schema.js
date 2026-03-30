@@ -11,7 +11,7 @@ export const GroupIdScm = z.string().trim().uuid("Invalid group ID");
 
 export const NullGroupIdScm = z.string().uuid("Invalid group ID").nullable();
 
-export const PeopleCountScm = z.number().int().positive("Invalid people number").max(30);
+export const PeopleCountScm = z.coerce.number().int().positive("Invalid people number").max(30);
 
 export const NameScm = z.string().min(1);
 

@@ -1,5 +1,8 @@
 @BASE_URL = http://localhost:9999
 @ACCESS_TOKEN = {{login.response.body.access_token}}
+@locationId=c2a40b6a-64c6-4d5c-88c6-471ccdaa327b
+@LOC2=14f66239-de40-4575-aea1-f7d7405b4695
+@LOC3=421602e9-efda-4229-922f-f3e0b032b47a
 
 ### Login
 # @name login
@@ -14,10 +17,12 @@ Content-Type: application/json
 ### Create location
 POST {{BASE_URL}}/api/locations
 Content-Type: application/json
+Authorization: Bearer {{ACCESS_TOKEN}}
 
 {
-    "name": "Table 2",
-    "displayName": "T2"
+    "name": "Table 3",
+    "displayName": "T3"
 }
 
-
+### Get location by Id
+GET {{BASE_URL}}/api/locations/{{locationId}}

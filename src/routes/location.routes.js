@@ -1,11 +1,10 @@
 import express from "express";
 import { checkAuth } from "../middlewares/checkAuth.js";
-import { createLocationController } from "../controllers/location.controller.js";
-import { getLocationById } from "../services/location.service.js";
+import { createLocationController, getLocationController } from "../controllers/location.controller.js";
 
 const locationRoutes = express.Router();
 
 locationRoutes.post('', checkAuth, createLocationController);
-locationRoutes.get('', getLocationById);
+locationRoutes.get('/:id', getLocationController);
 
 export default locationRoutes;

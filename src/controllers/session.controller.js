@@ -25,7 +25,7 @@ export async function getFilteredSessionsController(req, res, next) {
   const { locationId } = req.query;
 
   try {
-    const responses = await getSessionsByFilter({locationId});
+    const responses = await getSessionsByFilter({locationId, status: "ACTIVE"});
     res.status(200).json({
       message: "Sessions by location retrieved successfully.",
       responses,
