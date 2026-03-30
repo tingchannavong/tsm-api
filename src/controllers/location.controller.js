@@ -1,4 +1,4 @@
-import { createLocation } from "../services/location.service.js";
+import { createLocation, getLocationById } from "../services/location.service.js";
 
 export async function createLocationController(req, res, next) {
   const { name, displayName } = req.body;
@@ -12,6 +12,20 @@ export async function createLocationController(req, res, next) {
     res.status(201).json({
       message: "Location created successfully",
       resp,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getLocationController(req, res, next) {
+  const { id } = req.params;
+
+  try {
+    const responses = await getLocationById(id);
+    res.status(200).json({
+      message: "Location retrieved successfully.",
+      responses,
     });
   } catch (error) {
     next(error);

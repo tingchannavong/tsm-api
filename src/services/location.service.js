@@ -7,3 +7,11 @@ export async function createLocation(data) {
 
   return result;
 }
+
+export async function getLocationById(id) {
+  const result = await prisma.location.findUnique({
+     where: { id },
+  });
+
+  return result;
+}
