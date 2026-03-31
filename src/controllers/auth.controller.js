@@ -56,7 +56,7 @@ export async function loginController(req, res, next) {
   }
 }
 
-export async function getUserDataController(req, res) {
+export async function getUserDataController(req, res, next) {
   try {
     const { id, role, username } = req.userPayload;
     const userData = await findUserById(id);
@@ -67,6 +67,9 @@ export async function getUserDataController(req, res) {
       username,
       id,
       role,
+      firstname: userData.firstname,
+      lastname: userData.lastname,
+      phone: userData.phone
     });
   } catch (error) {
     next(error);
@@ -87,7 +90,7 @@ export async function checkUserController(req, res) {
     const resetToken = generateToken(payload, process.env.RESET_KEY, "10m");
     // set token and id in token table bonus extra security
     const result = await createTokenIdentity(resetToken, user.id);
-    console.log(result);
+
     // create reset link
     const resetLink = `/auth/reset-password/${resetToken}`;
     // send resetLink to front end
