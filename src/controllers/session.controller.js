@@ -26,16 +26,15 @@ export async function getFilteredSessionsController(req, res, next) {
   try {
     const responses = await getSessionsByFilter(req.query);
 
-    const sameStartTimes = [];
+    let sameStartTimes;
     responses.forEach((each) => {
-        const groupedSameStart = accumulateSameStartTimes(each.items)
-        sameStartTimes.push(groupedSameStart);
+      sameStartTimes = accumulateSameStartTimes(each.items);
     });
 
     res.status(200).json({
       message: "Sessions by location retrieved successfully.",
       grouped: responses,
-      sameStartTimes
+      sameStartTimes,
     });
   } catch (error) {
     next(error);
@@ -98,7 +97,7 @@ export async function deleteSessionController(req, res, next) {
 }
 
 export async function updateGroupSessionController(req, res, next) {
-   const { id } = req.params;
+  const { id } = req.params;
 
   try {
     const responses = await updateSessionByField("groupId", id, req.body);
