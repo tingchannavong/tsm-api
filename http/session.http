@@ -3,7 +3,8 @@
 @locationId=c2a40b6a-64c6-4d5c-88c6-471ccdaa327b
 @groupId=9a071ddb-5d94-4d2b-a8ad-1367360cea72
 @LOC2=14f66239-de40-4575-aea1-f7d7405b4695
-@RockyGROUP=9a071ddb-5d94-4d2b-a8ad-1367360cea72
+@LOC3=421602e9-efda-4229-922f-f3e0b032b47a
+@RockyGROUP=092e9bc0-6cb7-4c94-9461-11797cbc3d0d
 ### Login
 # @name login
 POST {{BASE_URL}}/api/auth/login
@@ -15,7 +16,7 @@ Content-Type: application/json
 }
 
 ### Get filtered session
-GET {{BASE_URL}}/api/sessions/filter?locationId={{locationId}}
+GET {{BASE_URL}}/api/sessions/filter?locationId={{LOC3}}&groupId={{RockyGROUP}}
 
 ### Get all sessions
 # locationId={{locationId}}&groupId={{groupId}}

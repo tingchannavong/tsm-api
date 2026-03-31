@@ -13,9 +13,9 @@
 | 6   | POST           | `/api/auth/forgot-password`       | -    | -           | -                                        | {email}                                                        |
 | 7   | POST           | `/api/auth/reset-password/:token` | -    | resetToken  | -                                        | {password, confirmPassword}                                    |
 |     | **Sessions**   |                                   |      |             |                                          |                                                                |
-| 8   | POST           | `/api/sessions`                   | -    | -           | -                                        | {locationId, groupId?, names, people, pricingId}                |
+| 8   | POST           | `/api/sessions`                   | -    | -           | -                                        | {locationId, groupId?, names, people, pricingId}               |
 | 9   | GET            | `/api/sessions`                   | y    | -           | {groupId, locationId, status}            | -                                                              |
-| 9.1 | GET            | `/api/sessions/filter`            | -    | -           | {locationId}                             | -                                                              |
+| 9.1 | GET            | `/api/sessions/filter`            | -    | -           | {locationId, groupId}                    | -                                                              |
 | 10  | GET            | `/api/sessions/:id`               | -    | sessionId   | -                                        | -                                                              |
 | 11  | PATCH          | `/api/sessions/:id`               | y    | sessionId   | -                                        | {status, name, startTime, endTime, updatedBy}                  |
 | 12  | DELETE         | `/api/sessions/:id`               | y    | sessionId   | -                                        | -                                                              |

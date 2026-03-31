@@ -3,6 +3,7 @@
 @locationId=c2a40b6a-64c6-4d5c-88c6-471ccdaa327b
 @LOC2=14f66239-de40-4575-aea1-f7d7405b4695
 @LOC3=421602e9-efda-4229-922f-f3e0b032b47a
+@LOC4=8a703ffd-79b4-410d-ae14-a5991cf3f43e
 
 ### Login
 # @name login
@@ -20,8 +21,8 @@ Content-Type: application/json
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 {
-    "name": "Table 3",
-    "displayName": "T3"
+    "name": "Table 4",
+    "displayName": "T4"
 }
 
 ### Get location by Id

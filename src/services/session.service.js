@@ -1,5 +1,6 @@
 import prisma from "../libs/prismaClient.js";
 import createError from "http-errors";
+import { cleanSessionsToGroups } from "../utils/core.js";
 
 export async function createSessions(payload) {
   // TO DO: refactor into names: [array]
@@ -50,10 +51,21 @@ export async function createSession(sessionData) {
   return result;
 }
 
-export async function getSessionsByFilter(filters) {
-  const result = await prisma.sessionRecord.findMany({
+export async function getSessionsByFilter(payload) {
+    const { groupId, locationId } = payload;
+
+   const filters = {};
+  if (groupId) filters.groupId = groupId;
+  if (locationId) filters.locationId = locationId;
+  filters.status = "ACTIVE";
+
+  console.log(filters);
+
+  const data = await prisma.sessionRecord.findMany({
     where: filters ,
   });
+
+  const result = cleanSessionsToGroups(data)
 
   return result;
 }

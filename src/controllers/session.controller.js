@@ -8,6 +8,7 @@ import {
   updateSessionById,
 } from "../services/session.service.js";
 import createError from "http-errors";
+import { accumulateSameStartTimes } from "../utils/core.js";
 
 export async function createSessionsController(req, res, next) {
   try {
@@ -22,13 +23,19 @@ export async function createSessionsController(req, res, next) {
 }
 
 export async function getFilteredSessionsController(req, res, next) {
-  const { locationId } = req.query;
-
   try {
-    const responses = await getSessionsByFilter({locationId, status: "ACTIVE"});
+    const responses = await getSessionsByFilter(req.query);
+
+    const sameStartTimes = [];
+    responses.forEach((each) => {
+        const groupedSameStart = accumulateSameStartTimes(each.items)
+        sameStartTimes.push(groupedSameStart);
+    });
+
     res.status(200).json({
       message: "Sessions by location retrieved successfully.",
-      responses,
+      grouped: responses,
+      sameStartTimes
     });
   } catch (error) {
     next(error);
