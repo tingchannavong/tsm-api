@@ -11,12 +11,12 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-    "username": "superadmin",
-    "password": "pp",
+    "username": "aek",
+    "password": "pppppp",
     "phone": "45345",
     "email": "n@gmail.com",
-    "firstname": "pao",
-    "lastname": "zhang"
+    "firstname": "aek",
+    "lastname": "bleach"
 }
 
 ### Login
@@ -33,9 +33,6 @@ Content-Type: application/json
 ### GET my info
 GET {{BASE_URL}}/api/auth/me
 Authorization: Bearer {{ACCESS_TOKEN}}
-
-
-
 
 // TO BE IMPLEMENTED LATER 
 ### POST forgot password

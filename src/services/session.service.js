@@ -59,8 +59,6 @@ export async function getSessionsByFilter(payload) {
   if (locationId) filters.locationId = locationId;
   filters.status = "ACTIVE";
 
-  console.log(filters);
-
   const data = await prisma.sessionRecord.findMany({
     where: filters ,
   });
