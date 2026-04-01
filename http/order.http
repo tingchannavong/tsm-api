@@ -16,11 +16,11 @@ Content-Type: application/json
 
 ### Order Preview
 POST {{BASE_URL}}/api/orders/preview
-Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-    "sessionIds": [40, 41, 42, 43]
+    "sessionIds": [71, 72],
+    "endTime": "2026-04-01T11:42:36.075Z"
 }
 
 ### Create order

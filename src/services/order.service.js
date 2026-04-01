@@ -8,7 +8,9 @@ import {
 } from "../billing/billing.domain.js";
 import { getSessionsByFilter, updateSessionByField, updateSessionById, validateBilledSession } from "./session.service.js";
 
-export async function getOrderPreviewBySession(sessionIds) {
+export async function getOrderPreviewBySession(payload) {
+    const { sessionIds, endTime } = payload;
+
   // session records of each id
   const sessions = await getSessionsByIds(sessionIds);
 
@@ -19,8 +21,8 @@ export async function getOrderPreviewBySession(sessionIds) {
   const pricingId = sessions[0].pricingId;
   const pricingPolicy = await getPricingById(pricingId);
 
-  const sessionItems = calculateSessionLineItems(sessions, pricingPolicy);
-  console.log(sessionItems);
+  const sessionItems = calculateSessionLineItems(sessions, pricingPolicy, {endTime});
+  // console.log(sessionItems);
   const orderLineItems = calculatePreviewOrderLineItems(sessionItems);
 
   const grandTotal = calculateOrderGrandTotal(orderLineItems);

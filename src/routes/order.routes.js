@@ -8,7 +8,7 @@ import { UpdateOrderSchema } from "../validations/order.schema.js";
 const orderRoutes = express.Router();
 
 // TO DO validate data
-orderRoutes.post('/preview', checkAuth, getOrderPreviewController);
+orderRoutes.post('/preview', getOrderPreviewController);
 orderRoutes.post('', checkAuth, createOrderController);
 
 orderRoutes.get('', checkAuth, getOrdersController);

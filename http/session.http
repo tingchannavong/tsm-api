@@ -22,7 +22,7 @@ GET {{BASE_URL}}/api/sessions/filter?locationId={{LOC3}}&groupId={{RockyGROUP}}
 ### Get all sessions
 # locationId={{locationId}}&groupId={{groupId}}
 # GET {{BASE_URL}}/api/sessions
-GET {{BASE_URL}}/api/sessions?status=ENDED
+GET {{BASE_URL}}/api/sessions?status=ACTIVE
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Create session
@@ -32,7 +32,8 @@ Content-Type: application/json
 {
     "locationId": "c2a40b6a-64c6-4d5c-88c6-471ccdaa327b", 
     "groupId": null, 
-    "people": 4,
+    "names": ["Poom", "Peach"],
+    "people": 2,
     "pricingId": 1
 }
 

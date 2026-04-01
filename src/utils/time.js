@@ -1,3 +1,13 @@
+export function getDurationMinutes(startTime, endTime) {
+    const start = new Date(startTime);
+  const end = new Date(endTime);
+
+  return Math.max(
+    0,
+    Math.round((end - start) / 60000)
+  );
+}
+
 export function convertDateTimeTo24HrTime(dateTime) {
   const dateObj = new Date(dateTime);
 

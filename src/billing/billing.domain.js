@@ -1,20 +1,24 @@
-import { convertDateTimeTo24HrTime, convertMinToHour } from "../utils/time.js";
+import { convertDateTimeTo24HrTime, convertMinToHour, getDurationMinutes } from "../utils/time.js";
 
 export function calculateTotalPrice(unit, price) {
   const total = unit * price;
   return Number(total.toFixed(2));
 }
 
-export function calculateSessionLineItems(sessions, pricingPolicy) {
+export function calculateSessionLineItems(sessions, pricingPolicy, { endTime } = {}) {
   const items = [];
 
   sessions.forEach((session) => {
+    // FOR CUSTOMER || STAFF PREVIEW OPTIONS
+    const finalEndTime = endTime || session.endTime;
+    const finalDurationMin= !session.durationMin ? getDurationMinutes(session.startTime, endTime): session.durationMin;
+
     const line = {};
     line.sessionId = session.id;
     line.pricingPolicy = pricingPolicy.name;
     line.startTime = session.startTime;
-    line.endTime = session.endTime;
-    line.durationMin = session.durationMin;
+    line.endTime = finalEndTime;
+    line.durationMin = finalDurationMin;
     line.price = pricingPolicy.price;
     line.lineTotal = calculateTotalPrice(line.durationMin, line.price);
     line.currencyCode = pricingPolicy.currency.code;

@@ -2,10 +2,9 @@ import createError from "http-errors";
 import { createOrder, deleteOrderById, getAllOrdersWithDetails, getOrderById, getOrderPreviewBySession, updateOrderById } from "../services/order.service.js";
 
 export async function getOrderPreviewController(req, res, next) {
-  const { sessionIds } = req.body;
 
   try {
-    const responses = await getOrderPreviewBySession(sessionIds);
+    const responses = await getOrderPreviewBySession(req.body);
     res.status(200).json({
       message: "Order preview retrieved successfully.",
       responses,
