@@ -78,6 +78,11 @@ export async function getAllSessions(payload) {
 
   const result = await prisma.sessionRecord.findMany({
     where: filters,
+    include: {
+      location: {
+        select: {name: true}
+      }
+    }
   });
 
   return result;
