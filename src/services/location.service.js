@@ -15,3 +15,9 @@ export async function getLocationById(id) {
 
   return result;
 }
+
+export async function getAllLocations() {
+  const result = await prisma.location.findMany({});
+
+  return result;
+}

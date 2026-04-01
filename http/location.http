@@ -21,9 +21,10 @@ Content-Type: application/json
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 {
-    "name": "Table 4",
-    "displayName": "T4"
+    "name": "Table 9",
+    "displayName": "T9"
 }
 
-### Get location by Id
-GET {{BASE_URL}}/api/locations/{{locationId}}
+### Get all locations
+GET {{BASE_URL}}/api/locations/
+Authorization: Bearer {{ACCESS_TOKEN}}
