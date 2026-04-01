@@ -11,7 +11,7 @@ export async function createSessions(payload) {
 
   // Create first session
   const first = await createSession({
-    name: names[0],
+    name: names[0] ? names[0] : 'Guest 1',
     locationId,
     groupId,
     pricingId,
@@ -175,6 +175,9 @@ export async function updateSessionById(id, payload) {
 }
 
 export async function deleteSessionById(id) {
+  
+   await validateBilledSession([id]);
+
   return await prisma.sessionRecord.delete({
     where: { id },
   });

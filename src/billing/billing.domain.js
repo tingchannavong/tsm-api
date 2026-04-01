@@ -9,7 +9,7 @@ export function calculateSessionLineItems(sessions, pricingPolicy, { endTime } =
   const items = [];
 
   sessions.forEach((session) => {
-    // FOR CUSTOMER || STAFF PREVIEW OPTIONS
+    // OPTIONS PREVIEW FOR CUSTOMER sending estimate end time || STAFF retrieving real end time in db 
     const finalEndTime = endTime || session.endTime;
     const finalDurationMin= !session.durationMin ? getDurationMinutes(session.startTime, endTime): session.durationMin;
 
