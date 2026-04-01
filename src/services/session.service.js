@@ -136,6 +136,12 @@ export async function updateSessionById(id, payload) {
   // TO DO: add updated by who
   const { status, name, startTime, endTime, pricingId } = payload;
 
+   const currentSession = getSessionById(id);
+
+  if (!currentSession) {
+    throw createError(404, "Session not found");
+  }
+
   await validateBilledSession([id]);
 
   const needsTimeValidation = startTime || endTime;
@@ -174,10 +180,13 @@ export async function deleteSessionById(id) {
   });
 }
 
+export async function getSessionsWhere(where) {
+  return prisma.sessionRecord.findMany({ where });
+}
+
 export async function validateBilledSession(sessionIds) {
-  const isBilled = await getSessionsByFilter({status: 'BILLED', id: {in: sessionIds}});
+  const isBilled = await getSessionsWhere({status: 'BILLED', id: {in: sessionIds}});
   if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
-  // if (!isBilled) throw createError(404, "Session(s) not found");
 
   return true;
 }

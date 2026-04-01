@@ -39,8 +39,8 @@ export const UpdateSessionSchema = z.object({
   body: z.object({
     status: z.nativeEnum(SessionStatus).optional(),
     name: NameScm.optional(),
-    endTime: DateTimeScm.optional(),
-    startTime: DateTimeScm.optional()
+    // endTime: DateTimeScm.optional(),
+    // startTime: DateTimeScm.optional()
   })
 });
 
