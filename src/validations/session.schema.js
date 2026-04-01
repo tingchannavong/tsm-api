@@ -50,6 +50,6 @@ export const UpdateGroupSessionSchema = z.object({
   }),
   body: z.object({
     status: z.nativeEnum(SessionStatus),
-    endTime: DateTimeScm
+    // endTime: DateTimeScm
   })
 });

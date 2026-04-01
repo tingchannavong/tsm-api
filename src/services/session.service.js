@@ -96,7 +96,7 @@ export async function getSessionById(id) {
 
 export async function getSessionByGroupId(groupId) {
   return await prisma.sessionRecord.findMany({
-    where: groupId ,
+    where: {groupId: groupId} ,
   });
 }
 
@@ -107,8 +107,10 @@ export async function updateSessionByField(field, info, payload, tx) {
 
   const { status, endTime } = payload;
 
-  const isBilled = await getSessionsByFilter({status: 'BILLED', [field]: info});
+  const isBilled = await getSessionsWhere({status: 'BILLED', [field]: info});
   if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
+
+  const sampleSession = await getSessionByGroupId(info);
 
   const data = {};
   if (status) data.status = status;
@@ -116,7 +118,7 @@ export async function updateSessionByField(field, info, payload, tx) {
   if (endTime) {
     const finalEnd = new Date(endTime);
 
-    if (finalEnd < sampleSession.startTime) {
+    if (finalEnd < sampleSession[0].startTime) {
       throw createError(400, "End time cannot be earlier than start time");
     }
     data.endTime = new Date(endTime);
@@ -175,7 +177,7 @@ export async function updateSessionById(id, payload) {
 }
 
 export async function deleteSessionById(id) {
-  
+
    await validateBilledSession([id]);
 
   return await prisma.sessionRecord.delete({
