@@ -48,7 +48,7 @@ export async function loginController(req, res, next) {
     // Success: proceed
     const { role, id } = user;
     const payload = { username, role, id };
-    const access_token = generateToken(payload, process.env.SECRET_KEY, "1h");
+    const access_token = generateToken(payload, process.env.SECRET_KEY, "3h");
 
     res.status(200).json({ message: "Log in success", access_token });
   } catch (error) {

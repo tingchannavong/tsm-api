@@ -51,6 +51,13 @@ export async function createSession(sessionData) {
   return result;
 }
 
+export async function getSessionById(id) {
+  return await prisma.sessionRecord.findUnique({
+    where: { id },
+  });
+}
+
+// BELOW 2 GET FUNCTIONS CAN COMBINE INTO ONE
 export async function getSessionsByFilter(payload) {
     const { groupId, locationId } = payload;
 
@@ -88,15 +95,18 @@ export async function getAllSessions(payload) {
   return result;
 }
 
-export async function getSessionById(id) {
-  return await prisma.sessionRecord.findUnique({
-    where: { id },
-  });
-}
-
 export async function getSessionByGroupId(groupId) {
   return await prisma.sessionRecord.findMany({
     where: {groupId: groupId} ,
+  });
+}
+
+export async function deleteSessionById(id) {
+
+   await validateBilledSession([id]);
+
+  return await prisma.sessionRecord.delete({
+    where: { id },
   });
 }
 
@@ -106,6 +116,10 @@ export async function updateSessionByField(field, info, payload, tx) {
   const db = tx || prisma;
 
   const { status, endTime } = payload;
+
+  // normalize info input
+   const arrayedInfo = [];
+  if (!Array.isArray(info)) arrayedInfo.push(info);
 
   const isBilled = await getSessionsWhere({status: 'BILLED', [field]: info});
   if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
@@ -121,7 +135,10 @@ export async function updateSessionByField(field, info, payload, tx) {
     if (finalEnd < sampleSession[0].startTime) {
       throw createError(400, "End time cannot be earlier than start time");
     }
-    data.endTime = new Date(endTime);
+    data.endTime = finalEnd;
+  } else {
+    const currentEndTime = new Date();
+    data.endTime = currentEndTime;
   }
 
   if (Object.keys(data).length === 0) {
@@ -176,15 +193,6 @@ export async function updateSessionById(id, payload) {
   });
 }
 
-export async function deleteSessionById(id) {
-
-   await validateBilledSession([id]);
-
-  return await prisma.sessionRecord.delete({
-    where: { id },
-  });
-}
-
 export async function getSessionsWhere(where) {
   return prisma.sessionRecord.findMany({ where });
 }
@@ -196,4 +204,4 @@ export async function validateBilledSession(sessionIds) {
   return true;
 }
 
-console.log(new Date("2026-03-24 18:15:00").toISOString());
+// console.log(new Date("2026-03-24 18:15:00").toISOString());

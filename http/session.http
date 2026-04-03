@@ -22,7 +22,7 @@ GET {{BASE_URL}}/api/sessions/filter?locationId={{LOC3}}&groupId={{RockyGROUP}}
 ### Get all sessions
 # locationId={{locationId}}&groupId={{groupId}}
 # GET {{BASE_URL}}/api/sessions
-GET {{BASE_URL}}/api/sessions?status=ACTIVE
+GET {{BASE_URL}}/api/sessions?status=ENDED
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Create session
@@ -61,13 +61,12 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Update session by Group
 # TO DO: add start time patch later
-PATCH {{BASE_URL}}/api/sessions/groups/f5ea9395-3f72-4729-9e2f-00ea36b70aac
+PATCH {{BASE_URL}}/api/sessions/groups/3f585963-d751-410a-a8e1-5f861c4fd8d9
 Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-    "status": "ENDED", 
-    "endTime": "2026-03-28T11:01:00.000Z"
+    "status": "ENDED"
 }
 
 # console.log(new Date("2026-03-24 18:15:00").toISOString());
