@@ -61,12 +61,12 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Update session by Group
 # TO DO: add start time patch later
-PATCH {{BASE_URL}}/api/sessions/groups/3f585963-d751-410a-a8e1-5f861c4fd8d9
+PATCH {{BASE_URL}}/api/sessions/groups/ad72acc8-f4d6-4e92-8e7e-45c4e4f0aca5
 Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-    "status": "ENDED"
+    "status": "ACTIVE"
 }
 
 # console.log(new Date("2026-03-24 18:15:00").toISOString());

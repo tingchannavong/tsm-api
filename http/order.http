@@ -19,7 +19,7 @@ POST {{BASE_URL}}/api/orders/preview
 Content-Type: application/json
 
 {
-    "sessionIds": [88]
+    "sessionIds": [98, 99]
 }
 
 # "endTime": "2026-04-01T11:42:36.075Z"
@@ -30,8 +30,9 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-    "sessionIds": [44, 45],
-    "createdById": 2
+    "sessionIds": [98, 99],
+    "createdById": 23,
+    "discount": 15000
 }
 
 ### Get orders

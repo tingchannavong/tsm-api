@@ -55,7 +55,8 @@ export async function createOrder(payload) {
   try {
     await validateBilledSession(sessionIds);
 
-    const orderPreview = await getOrderPreviewBySession(sessionIds);
+    const orderPreview = await getOrderPreviewBySession({sessionIds: sessionIds});
+    console.log(orderPreview)
 
     const { grandTotal, items } = orderPreview;
     const netTotal = grandTotal - discount;
