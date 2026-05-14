@@ -1,7 +1,7 @@
 node_modules
 # Keep environment variables out of version control
 .env
-http-client.env.json
+.vscode
 
 /src/generated/prisma
 /src/.DS_Store
