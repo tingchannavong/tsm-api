@@ -1,5 +1,5 @@
 # cmd + alt + E change environment of rest toggle: local / production 
-@BASE_URL = {{baseUrl}}
+@BASE_URL = {{$dotenv BASE_URL}}
 @ACCESS_TOKEN = {{login.response.body.access_token}}
 @RESET_TOKEN = {{reset.response.body.resetToken}}
 
