@@ -51,7 +51,7 @@ export async function loginController(req, res, next) {
 
     // refresh token is sent to front-end as cookie of express
     res.cookie("refreshToken", user.refreshToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: false
     });
     
@@ -86,11 +86,16 @@ export async function refreshTokenController(req, res, next) {
     const ipAddress = req.ip;
     const userAgent = req.headers['user-agent'] || 'N/A';
     const oldRefreshToken = req.cookies.refreshToken;
-    console.log('we are here');
+    
     const result = await manageRefreshToken(oldRefreshToken, ipAddress, userAgent);
-    res.status(400).json({
-      message: "success refresh"
-    })
+    const access_token = result.access_token;
+    // console.log('result of new refresh token', result)
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: false
+    });
+    
+    res.status(200).json({ message: "success refresh", access_token});
   } catch (error) {
     next(error)
   }

@@ -66,15 +66,14 @@ export async function verifyUserAuth(username, password, ipAddress, userAgent) {
   // Success: proceed
   const { role, id } = user;
   const payload = { username, role, id };
-  const access_token = generateToken(payload, process.env.SECRET_KEY, "1m");
-  // create refreshToken - like a card
-  const refreshToken = generateToken(payload, process.env.REFRESH_KEY, "14d");
-  const decode = verifyUserToken(refreshToken, process.env.REFRESH_KEY);
+  const newAccessToken = generateToken(payload, process.env.SECRET_KEY, "15m");
+  const newRefreshToken = generateToken(payload, process.env.REFRESH_KEY, "14d");
+  const decode = verifyUserToken(newRefreshToken, process.env.REFRESH_KEY);
 
   const refreshTokenData = {
     ipAddress,
     userAgent,
-    refreshToken
+    refreshToken: newRefreshToken
   }
 
   // save refresh token as db
@@ -85,8 +84,8 @@ export async function verifyUserAuth(username, password, ipAddress, userAgent) {
   }
 
   return {
-    access_token,
-    refreshToken,
+    access_token: newAccessToken,
+    refreshToken: newRefreshToken,
     user: {
       id: user.id,
       name: user.name,
@@ -123,7 +122,9 @@ export async function manageRefreshToken(oldRefreshToken, ipAddress, userAgent) 
 
   const savedToken = await prisma.refreshToken.findUnique({
     where: { token: oldRefreshToken }
-  })
+  });
+
+  console.log('savedToken', savedToken)
 
   if (!savedToken) throw createError(400, "No saved token");
 
@@ -132,6 +133,46 @@ export async function manageRefreshToken(oldRefreshToken, ipAddress, userAgent) 
       token: oldRefreshToken
     }})
     throw createError(400, "Refresh token expired.")
+  };
+
+  // delete old one anyway
+  await prisma.refreshToken.delete({ where: {
+      token: oldRefreshToken
+    }});
+  
+  const decodeOld = verifyUserToken(oldRefreshToken, process.env.REFRESH_KEY);
+
+  const user = await findUserById(decodeOld.id);
+
+  if (!user) {
+    throw createError(400, "Invalid username or password.");
+  }
+  const { role, id } = user;
+  const payload = { role, id };
+  const access_token = generateToken(payload, process.env.SECRET_KEY, "15m");
+  const newRefreshToken = generateToken(payload, process.env.REFRESH_KEY, "14d");
+  const decode = verifyUserToken(newRefreshToken, process.env.REFRESH_KEY);
+
+  const refreshTokenData = {
+    ipAddress,
+    userAgent,
+    refreshToken: newRefreshToken
+  }
+
+  const res = await createRefreshTokenRecord(user, refreshTokenData, decode);
+  console.log('res at new req service', res)
+  if (!res) {
+    throw createError(500, "Failed to save refresh token");
+  }
+
+  return {
+    access_token,
+    refreshToken: newRefreshToken,
+    user: {
+      id: user.id,
+      name: user.username,
+      email: user.email
+    }
   };
 
 }
