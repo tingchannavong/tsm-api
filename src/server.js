@@ -16,7 +16,7 @@ console.log("Hit the route!");
 
 app.use(cors({
     origin: "http://localhost:5173", // to let app accept request from this host
-    credentials: true // to accept refresh token
+    credentials: true // to accept refresh token from HTTP cookies header
 })
 );
 

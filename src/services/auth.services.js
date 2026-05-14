@@ -65,7 +65,7 @@ export async function verifyUserAuth(username, password, ipAddress, userAgent) {
   // Success: proceed
   const { role, id } = user;
   const payload = { username, role, id };
-  const access_token = generateToken(payload, process.env.SECRET_KEY, "1m");
+  const access_token = generateToken(payload, process.env.SECRET_KEY, "15m");
   // create refreshToken - like a card
   const refreshToken = generateToken(payload, process.env.REFRESH_KEY, "14d");
   const decode = verifyUserToken(refreshToken, process.env.REFRESH_KEY);
