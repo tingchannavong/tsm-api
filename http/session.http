@@ -1,4 +1,4 @@
-@BASE_URL = http://localhost:9999
+@BASE_URL = {{baseUrl}}
 @ACCESS_TOKEN = {{login.response.body.access_token}}
 @locationId=c2a40b6a-64c6-4d5c-88c6-471ccdaa327b
 @groupId=9a071ddb-5d94-4d2b-a8ad-1367360cea72

@@ -1,4 +1,5 @@
-@BASE_URL = {host}
+# cmd + alt + E change environment of rest toggle: local / production 
+@BASE_URL = {{baseUrl}}
 @ACCESS_TOKEN = {{login.response.body.access_token}}
 @RESET_TOKEN = {{reset.response.body.resetToken}}
 
