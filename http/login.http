@@ -1,4 +1,4 @@
-@BASE_URL = process.env.BASE_URL
+@BASE_URL = {host}
 @ACCESS_TOKEN = {{login.response.body.access_token}}
 @RESET_TOKEN = {{reset.response.body.resetToken}}
 

@@ -37,6 +37,7 @@ model User {
   createdOrders   Order[]         @relation("OrderCreatedBy")
   updatedOrders   Order[]         @relation("OrderUpdatedBy")
   updatedSessions SessionRecord[] @relation("SessionUpdatedBy")
+  refreshTokens RefreshToken[]
 }
 
 model Location {
@@ -102,7 +103,7 @@ enum OrderStatus {
 model Order {
   id           Int           @id @default(autoincrement())
   grandTotal   Decimal       @db.Decimal(10, 2)
-  discount     Decimal?       @db.Decimal(10, 2)
+  discount     Decimal?      @db.Decimal(10, 2)
   netTotal     Decimal       @db.Decimal(10, 2)
   status       OrderStatus   @default(PAID)
   createdAt    DateTime      @default(now())
@@ -139,6 +140,17 @@ model Currency {
   code     String    @unique @db.Char(3)
   symbol   String    @unique @db.VarChar(10)
   pricings Pricing[]
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  ipAddress String
+  userAgent String
+  userId    Int
+  user User @relation(fields: [userId], references: [id])
 }
 
 // not needed now, for future loyalty point feature
