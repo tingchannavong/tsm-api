@@ -4,8 +4,9 @@ import {
   getAllSessions,
   getSessionById,
   getSessionsByFilter,
-  updateSessionByField,
+  endGroupSessions,
   updateSessionById,
+  endIndividualSessions,
 } from "../services/session.service.js";
 import createError from "http-errors";
 import { accumulateSameStartTimes } from "../utils/core.js";
@@ -100,9 +101,22 @@ export async function updateGroupSessionController(req, res, next) {
   const { id } = req.params;
 
   try {
-    const responses = await updateSessionByField("groupId", id, req.body);
+    const responses = await endGroupSessions("groupId", id, req.body);
     res.status(200).json({
       message: "Group session updated successfully.",
+      responses,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function endSessionsController(req, res, next) {
+
+  try {
+    const responses = await endIndividualSessions(req.body);
+    res.status(200).json({
+      message: "Individual sessions updated successfully.",
       responses,
     });
   } catch (error) {

@@ -2,6 +2,7 @@ import {
   createUser,
   findUserById,
   findUserByPhone,
+  manageRefreshToken,
   updatePasswordById,
   verifyUserAuth,
 } from "../services/auth.services.js";
@@ -41,12 +42,12 @@ export async function loginController(req, res, next) {
     const { username, password } = req.body;
     // save ipaddress and useragent for refresh token best practice, trackable
     const ipAddress = req.ip;
-    const userAgent = req.headers['user-agent'];
+    const userAgent = req.headers['user-agent'] || 'N/A';
   
     const user = await verifyUserAuth(username, password, ipAddress, userAgent);
     const access_token = user.access_token;
     
-    console.log('user', user);
+    // console.log('user', user);
 
     // refresh token is sent to front-end as cookie of express
     res.cookie("refreshToken", user.refreshToken, {
@@ -77,6 +78,21 @@ export async function getUserDataController(req, res, next) {
     });
   } catch (error) {
     next(error);
+  }
+}
+
+export async function refreshTokenController(req, res, next) {
+  try {
+    const ipAddress = req.ip;
+    const userAgent = req.headers['user-agent'] || 'N/A';
+    const oldRefreshToken = req.cookies.refreshToken;
+    console.log('we are here');
+    const result = await manageRefreshToken(oldRefreshToken, ipAddress, userAgent);
+    res.status(400).json({
+      message: "success refresh"
+    })
+  } catch (error) {
+    next(error)
   }
 }
 

@@ -1,6 +1,9 @@
 import express from "express";
-import {checkUserController, getUserDataController, loginController, registerController, resetPasswordController } from "../controllers/auth.controller.js";
+import {checkUserController, getUserDataController, loginController, refreshTokenController, registerController, resetPasswordController } from "../controllers/auth.controller.js";
 import { checkAuth, checkResetToken } from "../middlewares/checkAuth.js";
+// another clean way to write
+// import * as controller from "../controllers/authController.js";
+// controller.login
 
 const router = express.Router();
 
@@ -11,6 +14,8 @@ router.post('/login', loginController);
 router.get('/me', checkAuth, getUserDataController);
 
 router.post('/forgot-password', checkUserController);
+
+router.get('/refresh-token', refreshTokenController);
 
 router.patch('/reset-password/:token', checkResetToken, resetPasswordController)
 

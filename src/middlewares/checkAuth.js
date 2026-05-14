@@ -15,7 +15,7 @@ export function checkAuth(req, res, next) {
             req.userPayload = decode;
             next();
         } catch (error) {
-            throw createError(403, "Invalid credentials");
+            return next(createError(401, "Invalid token"))
         }
     }
 }

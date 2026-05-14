@@ -6,7 +6,7 @@ import {
   calculateSessionLineItems,
   calculatePreviewOrderLineItems,
 } from "../billing/billing.domain.js";
-import { getSessionsByFilter, updateSessionByField, updateSessionById, validateBilledSession } from "./session.service.js";
+import { endGroupSessions, getSessionsByFilter, updateSessionById, validateBilledSession } from "./session.service.js";
 
 export async function getOrderPreviewBySession(payload) {
     const { sessionIds, endTime } = payload;
@@ -77,7 +77,7 @@ export async function createOrder(payload) {
       for (const lineItem of items) {
         const newOrderDetail = await createOrderDetail(newOrder.id, lineItem, tx);
         // update sessionRecord to BILLED
-        const updatedSessions = await updateSessionByField("id", {in: lineItem.sessionIds}, {status: "BILLED"}, tx);
+        const updatedSessions = await endGroupSessions("id", {in: lineItem.sessionIds}, {status: "BILLED"}, tx);
         console.log("updated sessions", updatedSessions);
         console.log("order detail", newOrderDetail);
       }

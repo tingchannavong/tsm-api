@@ -1,9 +1,9 @@
 import prisma from "../libs/prismaClient.js";
 import createError from "http-errors";
 import { cleanSessionsToGroups } from "../utils/core.js";
+import { vaildateAndProvideEndTime } from "../utils/time.js";
 
 export async function createSessions(payload) {
-  // TO DO: refactor into names: [array]
   const { names = ['Guest 1'], locationId, groupId, people, pricingId } = payload;
 
   const totalPeople = Number(people) || 1;
@@ -111,8 +111,11 @@ export async function deleteSessionById(id) {
 }
 
 // LATER: handle other update fields like startTime
+// export async function updateSessionByField(field, info, payload, tx) {
+// }
+
 // TO DO: add updated by who
-export async function updateSessionByField(field, info, payload, tx) {
+export async function endGroupSessions(field, info, payload, tx) {
   const db = tx || prisma;
 
   const { status, endTime } = payload;
@@ -124,22 +127,14 @@ export async function updateSessionByField(field, info, payload, tx) {
   const isBilled = await getSessionsWhere({status: 'BILLED', [field]: info});
   if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
 
-  const sampleSession = await getSessionByGroupId(info);
+  const allSessions = await getSessionByGroupId(info);
 
   const data = {};
   if (status) data.status = status;
 
-  if (endTime) {
-    const finalEnd = new Date(endTime);
+  const finalEnd = vaildateAndProvideEndTime(allSessions, endTime)
 
-    if (finalEnd < sampleSession[0].startTime) {
-      throw createError(400, "End time cannot be earlier than start time");
-    }
-    data.endTime = finalEnd;
-  } else {
-    const currentEndTime = new Date();
-    data.endTime = currentEndTime;
-  }
+  data.endTime = finalEnd;
 
   if (Object.keys(data).length === 0) {
     throw createError(400, "No valid update fields provided");
@@ -147,6 +142,31 @@ export async function updateSessionByField(field, info, payload, tx) {
 
   return await db.sessionRecord.updateMany({
     where: { [field]: info },
+    data,
+  });
+}
+
+export async function endIndividualSessions(payload, tx) {
+ const { status, endTime, sessionIds } = payload;
+
+  const isBilled = await getSessionsWhere({status: 'BILLED', id: sessionIds});
+  if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
+
+  const allSessions = await getSessionsWhere({id: sessionIds});
+
+  const data = {};
+  if (status) data.status = status;
+
+  const finalEnd = vaildateAndProvideEndTime(allSessions, endTime)
+
+  data.endTime = finalEnd;
+
+  if (Object.keys(data).length === 0) {
+    throw createError(400, "No valid update fields provided");
+  }
+
+  return await db.sessionRecord.updateMany({
+    where: { id: sessionIds },
     data,
   });
 }

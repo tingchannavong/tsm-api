@@ -26,3 +26,19 @@ export function convertMinToHour(minutes) {
     const hours = minutes / 60;
     return hours.toFixed(2);
 }
+
+export function vaildateAndProvideEndTime(sessionsArray, endTime) {
+  sessionsArray.forEach(session => {
+   if (endTime) {
+      const finalEnd = new Date(endTime);
+  
+      if (finalEnd < session.startTime) {
+        throw createError(400, "End time cannot be earlier than start time");
+      }
+      return finalEnd;
+    } else {
+      const finalEndTime = new Date();
+      return finalEndTime;
+    }
+  });
+}

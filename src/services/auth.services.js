@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import prisma from "../libs/prismaClient.js";
 import { generateToken, verifyUserToken } from "../utils/jwt.js";
+import createError from "http-errors";
 
 async function hashString(string, saltRounds) {
   const hash = await bcrypt.hash(string, saltRounds);
@@ -65,7 +66,7 @@ export async function verifyUserAuth(username, password, ipAddress, userAgent) {
   // Success: proceed
   const { role, id } = user;
   const payload = { username, role, id };
-  const access_token = generateToken(payload, process.env.SECRET_KEY, "15m");
+  const access_token = generateToken(payload, process.env.SECRET_KEY, "1m");
   // create refreshToken - like a card
   const refreshToken = generateToken(payload, process.env.REFRESH_KEY, "14d");
   const decode = verifyUserToken(refreshToken, process.env.REFRESH_KEY);
@@ -112,4 +113,25 @@ export async function createRefreshTokenRecord(user, refreshTokenData, decode) {
     }
   })
   return res;
+}
+
+export async function manageRefreshToken(oldRefreshToken, ipAddress, userAgent) {
+  console.log('oldRefreshToken', oldRefreshToken);
+  if (!oldRefreshToken) {
+    throw createError(400, "No refresh token provided");
+  }
+
+  const savedToken = await prisma.refreshToken.findUnique({
+    where: { token: oldRefreshToken }
+  })
+
+  if (!savedToken) throw createError(400, "No saved token");
+
+  if(savedToken.expiresAt < new Date()) {
+    await prisma.refreshToken.delete({ where: {
+      token: oldRefreshToken
+    }})
+    throw createError(400, "Refresh token expired.")
+  };
+
 }
