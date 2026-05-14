@@ -49,7 +49,11 @@ export async function loginController(req, res, next) {
     const { role, id } = user;
     const payload = { username, role, id };
     const access_token = generateToken(payload, process.env.SECRET_KEY, "3h");
-
+    // create refreshToken - like a card
+    const refreshToken = generateToken(payload, process.env.REFRESH_KEY, "14d");
+    // send and keep as cookie
+    
+    ;
     res.status(200).json({ message: "Log in success", access_token });
   } catch (error) {
     next(error);

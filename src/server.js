@@ -9,7 +9,7 @@ import orderRoutes from "./routes/order.routes.js";
 import pricingRoutes from "./routes/pricing.routes.js";
 
 const app = express(); 
-const PORT = 9999;
+const PORT = process.env.PORT;
 
 console.log("Hit the route!");
 
