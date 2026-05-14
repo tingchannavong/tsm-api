@@ -165,6 +165,7 @@ model RefreshToken {
 
 // for security purposes
 // @User Table resetTokens Token[]
+
 // model Token {
 //   id    Int    @id @default(autoincrement())
 //   token String

@@ -39,27 +39,16 @@ export async function registerController(req, res, next) {
 export async function loginController(req, res, next) {
   try {
     const { username, password } = req.body;
+    // save ipaddress and useragent for refresh token best practice, trackable
     const ipAddress = req.ip;
     const userAgent = req.headers['user-agent'];
+  
+    // refresh and access is sent and keep as cookie
+    const user = await verifyUserAuth(username, password, ipAddress, userAgent);
+    const access_token = user.access_token;
+    console.log('user', user);
     
-    console.log('req', req.headers['user-agent']);
-    console.log('ipAddress', ipAddress)
-    const user = await verifyUserAuth(username, password);
-
-    if (!user) {
-      throw createError(401, "Invalid username or password");
-    }
-
-    // Success: proceed
-    const { role, id } = user;
-    const payload = { username, role, id };
-    const access_token = generateToken(payload, process.env.SECRET_KEY, "3h");
-    // create refreshToken - like a card
-    const refreshToken = generateToken(payload, process.env.REFRESH_KEY, "14d");
-    // send and keep as cookie
-
-    ;
-    res.status(200).json({ message: "Log in success", access_token });
+    res.status(200).json({ message: "Log in success", access_token});
   } catch (error) {
     next(error);
   }

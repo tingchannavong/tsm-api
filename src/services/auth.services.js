@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import prisma from "../libs/prismaClient.js";
+import { generateToken, verifyUserToken } from "../utils/jwt.js";
 
 async function hashString(string, saltRounds) {
   const hash = await bcrypt.hash(string, saltRounds);
@@ -49,17 +50,62 @@ export async function findUserById(id) {
   return found;
 }
 
-export async function verifyUserAuth(username, password) {
+export async function verifyUserAuth(username, password, ipAddress, userAgent) {
   const user = await findUserByUsername(username);
+
   if (!user) {
-    return null;
-  } else {
-    const isMatch = await bcrypt.compare(password, user.password);
-    return isMatch ? user : false;
+    throw createError(400, "Invalid username or password.");
   }
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    throw createError(400, "Invalid credentials");
+  }
+
+  // Success: proceed
+  const { role, id } = user;
+  const payload = { username, role, id };
+  const access_token = generateToken(payload, process.env.SECRET_KEY, "1m");
+  // create refreshToken - like a card
+  const refreshToken = generateToken(payload, process.env.REFRESH_KEY, "14d");
+  const decode = verifyUserToken(refreshToken, process.env.REFRESH_KEY);
+
+  const refreshTokenData = {
+    ipAddress,
+    userAgent,
+    refreshToken
+  }
+
+  // save refresh token as db
+  const res = await createRefreshTokenRecord(user, refreshTokenData, decode);
+
+  return {
+    access_token,
+    refreshToken,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email
+    }
+  };
 }
 
 export async function findUserByPhone(phone) {
   const found = await prisma.user.findUnique({ where: { phone } });
   return found;
+}
+
+// REFRESH TOKEN SAVE TO DB
+export async function createRefreshTokenRecord(user, refreshTokenData, decode) {
+  const { refreshToken, ipAddress, userAgent} = refreshTokenData;
+  const res = await prisma.refreshToken.create({
+    data: {
+      userId: user.id,
+      token: refreshToken,
+      expiresAt: new Date(decode.exp * 1000),
+      ipAddress,
+      userAgent
+    }
+  })
+  return res;
 }
