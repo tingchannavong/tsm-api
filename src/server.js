@@ -7,6 +7,7 @@ import notFound from "./middlewares/notFound.middleware.js";
 import locationRoutes from "./routes/location.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import pricingRoutes from "./routes/pricing.routes.js";
+import cookieParser from "cookie-parser";
 
 const app = express(); 
 const PORT = process.env.PORT;
@@ -20,6 +21,8 @@ app.use(cors({
 );
 
 app.use(express.json());
+app.use(cookieParser());
+
 app.use('/api/auth', authRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/orders', orderRoutes);

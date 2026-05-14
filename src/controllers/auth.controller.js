@@ -43,10 +43,16 @@ export async function loginController(req, res, next) {
     const ipAddress = req.ip;
     const userAgent = req.headers['user-agent'];
   
-    // refresh and access is sent and keep as cookie
     const user = await verifyUserAuth(username, password, ipAddress, userAgent);
     const access_token = user.access_token;
+    
     console.log('user', user);
+
+    // refresh token is sent to front-end as cookie of express
+    res.cookie("refreshToken", user.refreshToken, {
+      httpOnly: false,
+      secure: false
+    });
     
     res.status(200).json({ message: "Log in success", access_token});
   } catch (error) {

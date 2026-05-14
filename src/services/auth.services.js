@@ -79,6 +79,10 @@ export async function verifyUserAuth(username, password, ipAddress, userAgent) {
   // save refresh token as db
   const res = await createRefreshTokenRecord(user, refreshTokenData, decode);
 
+  if (!res) {
+    throw createError(500, "Failed to save refresh token");
+  }
+
   return {
     access_token,
     refreshToken,
