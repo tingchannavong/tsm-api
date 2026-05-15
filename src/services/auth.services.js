@@ -63,29 +63,13 @@ export async function verifyUserAuth(username, password, ipAddress, userAgent) {
     throw createError(400, "Invalid credentials");
   }
 
-  // Success: proceed
-  const { role, id } = user;
-  const payload = { username, role, id };
-  const newAccessToken = generateToken(payload, process.env.SECRET_KEY, "15m");
-  const newRefreshToken = generateToken(payload, process.env.REFRESH_KEY, "14d");
-  const decode = verifyUserToken(newRefreshToken, process.env.REFRESH_KEY);
-
-  const refreshTokenData = {
-    ipAddress,
-    userAgent,
-    refreshToken: newRefreshToken
-  }
-
-  // save refresh token as db
-  const res = await createRefreshTokenRecord(user, refreshTokenData, decode);
-
-  if (!res) {
-    throw createError(500, "Failed to save refresh token");
-  }
+   // Success: proceed
+   const res = await createAuthTokens(user, ipAddress, userAgent);
+  //  console.log('res at create auth tokens', res)
 
   return {
-    access_token: newAccessToken,
-    refreshToken: newRefreshToken,
+    access_token: res.access_token,
+    refreshToken: res.refreshToken,
     user: {
       id: user.id,
       name: user.name,
@@ -114,8 +98,18 @@ export async function createRefreshTokenRecord(user, refreshTokenData, decode) {
   return res;
 }
 
+export async function logOut(refreshToken) {
+  console.log('refreshToken', refreshToken)
+  if (!refreshToken) throw createError(400, "No refresh token.");
+  await prisma.refreshToken.delete({
+    where: {
+      token: refreshToken
+    }
+  })
+}
+
 export async function manageRefreshToken(oldRefreshToken, ipAddress, userAgent) {
-  console.log('oldRefreshToken', oldRefreshToken);
+  // console.log('oldRefreshToken', oldRefreshToken);
   if (!oldRefreshToken) {
     throw createError(401, "No refresh token provided");
   }
@@ -124,7 +118,7 @@ export async function manageRefreshToken(oldRefreshToken, ipAddress, userAgent) 
     where: { token: oldRefreshToken }
   });
 
-  console.log('savedToken', savedToken)
+  // console.log('savedToken', savedToken)
 
   if (!savedToken) throw createError(401, "No saved token");
 
@@ -147,31 +141,43 @@ export async function manageRefreshToken(oldRefreshToken, ipAddress, userAgent) 
   if (!user) {
     throw createError(400, "Invalid username or password.");
   }
-  const { role, id } = user;
-  const payload = { role, id };
-  const access_token = generateToken(payload, process.env.SECRET_KEY, "15m");
-  const newRefreshToken = generateToken(payload, process.env.REFRESH_KEY, "14d");
-  const decode = verifyUserToken(newRefreshToken, process.env.REFRESH_KEY);
-
-  const refreshTokenData = {
-    ipAddress,
-    userAgent,
-    refreshToken: newRefreshToken
-  }
-
-  const res = await createRefreshTokenRecord(user, refreshTokenData, decode);
-  console.log('res at new req service', res)
-  if (!res) {
-    throw createError(500, "Failed to save refresh token");
-  }
+  // success: proceed
+  const res = await createAuthTokens(user, ipAddress, userAgent);
+  const newAccessToken = res.access_token;
+  const newRefreshToken = res.refreshToken;
 
   return {
-    access_token,
+    access_token: newAccessToken,
     refreshToken: newRefreshToken,
     user: {
       id: user.id,
       name: user.username,
       email: user.email
     }
+  };
+}
+
+export async function createAuthTokens(user, ipAddress, userAgent) {
+  const { role, username, id } = user;
+  const payload = { role, username, id };
+  const access_token = generateToken(payload, process.env.SECRET_KEY, "15m");
+  const refreshToken = generateToken(payload, process.env.REFRESH_KEY, "14d");
+  const decode = verifyUserToken(refreshToken, process.env.REFRESH_KEY);
+
+  const refreshTokenData = {
+    ipAddress,
+    userAgent,
+    refreshToken
+  }
+
+  const res = await createRefreshTokenRecord(user, refreshTokenData, decode);
+  // console.log('res at new req service', res)
+  if (!res) {
+    throw createError(500, "Failed to save refresh token");
+  }
+
+  return {
+    access_token,
+    refreshToken
   };
 }

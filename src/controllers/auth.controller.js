@@ -2,6 +2,7 @@ import {
   createUser,
   findUserById,
   findUserByPhone,
+  logOut,
   manageRefreshToken,
   updatePasswordById,
   verifyUserAuth,
@@ -96,6 +97,19 @@ export async function refreshTokenController(req, res, next) {
     });
     
     res.status(200).json({ message: "success refresh", access_token});
+  } catch (error) {
+    next(error)
+  }
+}
+
+export async function logOutController(req, res, next) {
+  try {
+    console.log('we are log out controller')
+    const refreshToken = req.cookies.refreshToken;
+    
+    const result = await logOut(refreshToken);
+    
+    res.status(200).json({ message: "Log out success"});
   } catch (error) {
     next(error)
   }
