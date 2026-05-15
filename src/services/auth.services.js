@@ -117,7 +117,7 @@ export async function createRefreshTokenRecord(user, refreshTokenData, decode) {
 export async function manageRefreshToken(oldRefreshToken, ipAddress, userAgent) {
   console.log('oldRefreshToken', oldRefreshToken);
   if (!oldRefreshToken) {
-    throw createError(400, "No refresh token provided");
+    throw createError(401, "No refresh token provided");
   }
 
   const savedToken = await prisma.refreshToken.findUnique({
@@ -126,13 +126,13 @@ export async function manageRefreshToken(oldRefreshToken, ipAddress, userAgent) 
 
   console.log('savedToken', savedToken)
 
-  if (!savedToken) throw createError(400, "No saved token");
+  if (!savedToken) throw createError(401, "No saved token");
 
   if(savedToken.expiresAt < new Date()) {
     await prisma.refreshToken.delete({ where: {
       token: oldRefreshToken
     }})
-    throw createError(400, "Refresh token expired.")
+    throw createError(401, "Refresh token expired.")
   };
 
   // delete old one anyway
@@ -174,5 +174,4 @@ export async function manageRefreshToken(oldRefreshToken, ipAddress, userAgent) 
       email: user.email
     }
   };
-
 }

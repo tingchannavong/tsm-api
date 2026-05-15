@@ -27,18 +27,12 @@ export function convertMinToHour(minutes) {
     return hours.toFixed(2);
 }
 
-export function vaildateAndProvideEndTime(sessionsArray, endTime) {
+export function vaildateAndProvideEndTime(sessionsArray, endTime = null) {
+  const  finalEnd = endTime ? new Date(endTime) : new Date();
   sessionsArray.forEach(session => {
-   if (endTime) {
-      const finalEnd = new Date(endTime);
-  
       if (finalEnd < session.startTime) {
-        throw createError(400, "End time cannot be earlier than start time");
+        throw createError(400, "End time cannot be earlier than start time.");
       }
-      return finalEnd;
-    } else {
-      const finalEndTime = new Date();
-      return finalEndTime;
-    }
-  });
+    });
+  return finalEnd;
 }
