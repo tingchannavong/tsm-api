@@ -65,7 +65,7 @@ export function calculatePreviewOrderLineItems(sessionItems) {
 }
 
 export function calculateOrderGrandTotal(orderLineItems) {
-  console.log('orderLineItems', orderLineItems);
+  // console.log('orderLineItems', orderLineItems);
   // console.log(typeof orderLineItems[0].subTotal);
   let total = 0;
   orderLineItems.forEach((line, i) => {
@@ -74,6 +74,6 @@ export function calculateOrderGrandTotal(orderLineItems) {
     console.log(line.subTotal);
   }
   );
-  console.log('grand total at calc fn', total)
+  // console.log('grand total at calc fn', total)
   return Number(total.toFixed(2));
 }
