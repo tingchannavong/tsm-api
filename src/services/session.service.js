@@ -166,7 +166,28 @@ export async function endIndividualSessions(payload, tx) {
   }
 
   return await db.sessionRecord.updateMany({
-    where: { id: sessionIds },
+    where: { 
+      id: {
+        in: sessionIds 
+      } 
+    },
+    data,
+  });
+}
+
+export async function updateSessionsByIds(payload, tx) {
+    const db = tx || prisma;
+    const { status, sessionIds } = payload;
+
+  const data = {};
+  if (status) data.status = status;
+
+  return await db.sessionRecord.updateMany({
+    where: { 
+      id: {
+        in: sessionIds 
+      } 
+    },
     data,
   });
 }

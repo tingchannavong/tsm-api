@@ -109,7 +109,6 @@ export async function logOut(refreshToken) {
 }
 
 export async function manageRefreshToken(oldRefreshToken, ipAddress, userAgent) {
-  // console.log('oldRefreshToken', oldRefreshToken);
   if (!oldRefreshToken) {
     throw createError(401, "No refresh token provided");
   }
@@ -171,7 +170,6 @@ export async function createAuthTokens(user, ipAddress, userAgent) {
   }
 
   const res = await createRefreshTokenRecord(user, refreshTokenData, decode);
-  // console.log('res at new req service', res)
   if (!res) {
     throw createError(500, "Failed to save refresh token");
   }

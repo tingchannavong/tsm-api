@@ -6,10 +6,11 @@ import {
   calculateSessionLineItems,
   calculatePreviewOrderLineItems,
 } from "../billing/billing.domain.js";
-import { endGroupSessions, getSessionsByFilter, updateSessionById, validateBilledSession } from "./session.service.js";
+import { endGroupSessions, getSessionsByFilter, updateSessionById, updateSessionsByIds, validateBilledSession } from "./session.service.js";
 
-export async function getOrderPreviewBySession(payload) {
-    const { sessionIds, endTime } = payload;
+export async function getOrderPreviewBySession(payload, tx) {
+   const db = tx || prisma;
+   const { sessionIds, endTime } = payload;
 
   // session records of each id
   const sessions = await getSessionsByIds(sessionIds);
@@ -34,11 +35,13 @@ export async function getOrderPreviewBySession(payload) {
     discount: 0,
     netTotal: grandTotal - discount,
   };
+  // console.log('result at preview', result)
 
   return result;
 }
 
 export async function getSessionsByIds(sessionIds) {
+  if (!sessionIds) throw createError(400, "No session ids provided");
   const result = await prisma.sessionRecord.findMany({
     where: {
       id: {
@@ -55,12 +58,13 @@ export async function createOrder(payload) {
   try {
     await validateBilledSession(sessionIds);
 
-    const orderPreview = await getOrderPreviewBySession(sessionIds);
-
-    const { grandTotal, items } = orderPreview;
-    const netTotal = grandTotal - discount;
-
     const result = await prisma.$transaction(async (tx) => {
+      const orderPreview = await getOrderPreviewBySession({sessionIds: sessionIds});
+      console.log('orderPreview check items', orderPreview)
+      const { grandTotal, items } = orderPreview;
+      console.log('grandTotal async await', grandTotal);
+      const netTotal = grandTotal - discount;
+
       const newOrder = await tx.order.create({
         data: {
           grandTotal,
@@ -71,26 +75,23 @@ export async function createOrder(payload) {
           },
         },
       });
-      console.log('newOrder', newOrder);
-      console.log('items', items);
+      // console.log('newOrder', newOrder);
 
       for (const lineItem of items) {
         const newOrderDetail = await createOrderDetail(newOrder.id, lineItem, tx);
         // update sessionRecord to BILLED
-        const updatedSessions = await endGroupSessions("id", {in: lineItem.sessionIds}, {status: "BILLED"}, tx);
+        // const updatedSessions = await endGroupSessions("id", {in: lineItem.sessionIds}, {status: "BILLED"}, tx);
+        const updatedSessions = await updateSessionsByIds({status: "BILLED", sessionIds: lineItem.sessionIds}, tx);
+        
         console.log("updated sessions", updatedSessions);
         console.log("order detail", newOrderDetail);
       }
       return newOrder;
     });
 
-    return {
-      orderId: result.id,
-      items,
-      grandTotal,
-      discount,
-      netTotal,
-    };
+    console.log('result of transactions which is new order', result);
+
+    return result;
   } catch (error) {
     console.log(error);
     throw createError(400, `Order creation failed: ${error.message}`);

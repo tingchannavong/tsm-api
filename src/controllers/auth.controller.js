@@ -104,7 +104,6 @@ export async function refreshTokenController(req, res, next) {
 
 export async function logOutController(req, res, next) {
   try {
-    console.log('we are log out controller')
     const refreshToken = req.cookies.refreshToken;
     
     const result = await logOut(refreshToken);
