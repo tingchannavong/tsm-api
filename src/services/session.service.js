@@ -4,14 +4,20 @@ import { cleanSessionsToGroups } from "../utils/core.js";
 import { vaildateAndProvideEndTime } from "../utils/time.js";
 
 export async function createSessions(payload) {
-  const { names = ['Guest 1'], locationId, groupId, people, pricingId } = payload;
+  const {
+    names = ["Guest 1"],
+    locationId,
+    groupId,
+    people,
+    pricingId,
+  } = payload;
 
   const totalPeople = Number(people) || 1;
   const result = [];
 
   // Create first session
   const first = await createSession({
-    name: names[0] ? names[0] : 'Guest 1',
+    name: names[0] ? names[0] : "Guest 1",
     locationId,
     groupId,
     pricingId,
@@ -23,7 +29,9 @@ export async function createSessions(payload) {
   let indexOfName = 1;
   // For group, get group id from response, create the rest
   for (let i = 2; i <= totalPeople; i++) {
-    const eachName = names[indexOfName] ? names[indexOfName] : `Guest ${indexOfName+1}`;
+    const eachName = names[indexOfName]
+      ? names[indexOfName]
+      : `Guest ${indexOfName + 1}`;
 
     const session = await createSession({
       name: eachName,
@@ -59,18 +67,18 @@ export async function getSessionById(id) {
 
 // BELOW 2 GET FUNCTIONS CAN COMBINE INTO ONE
 export async function getSessionsByFilter(payload) {
-    const { groupId, locationId } = payload;
+  const { groupId, locationId } = payload;
 
-   const filters = {};
+  const filters = {};
   if (groupId) filters.groupId = groupId;
   if (locationId) filters.locationId = locationId;
   filters.status = "ACTIVE";
 
   const data = await prisma.sessionRecord.findMany({
-    where: filters ,
+    where: filters,
   });
 
-  const result = cleanSessionsToGroups(data)
+  const result = cleanSessionsToGroups(data);
 
   return result;
 }
@@ -87,9 +95,9 @@ export async function getAllSessions(payload) {
     where: filters,
     include: {
       location: {
-        select: {name: true}
-      }
-    }
+        select: { name: true },
+      },
+    },
   });
 
   return result;
@@ -97,13 +105,12 @@ export async function getAllSessions(payload) {
 
 export async function getSessionByGroupId(groupId) {
   return await prisma.sessionRecord.findMany({
-    where: {groupId: groupId} ,
+    where: { groupId: groupId },
   });
 }
 
 export async function deleteSessionById(id) {
-
-   await validateBilledSession([id]);
+  await validateBilledSession([id]);
 
   return await prisma.sessionRecord.delete({
     where: { id },
@@ -115,49 +122,37 @@ export async function deleteSessionById(id) {
 // }
 
 // TO DO: add updated by who
-export async function endGroupSessions(field, info, payload, tx) {
+export async function endGroupSessions(groupId, payload, tx) {
   const db = tx || prisma;
 
-  const { status, endTime } = payload;
+  const activeGroupData = await getSessionsWhere({ status: "ACTIVE", groupId: groupId });
+  const activeGroupSessionIds = activeGroupData.map( each => each.id);
 
-  // normalize info input
-   const arrayedInfo = [];
-  if (!Array.isArray(info)) arrayedInfo.push(info);
+  console.log('activeGroup', activeGroupSessionIds);
+  payload.sessionIds = activeGroupSessionIds;
 
-  const isBilled = await getSessionsWhere({status: 'BILLED', [field]: info});
-  if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
-
-  const allSessions = await getSessionByGroupId(info);
-
-  const data = {};
-  if (status) data.status = status;
-
-  const finalEnd = vaildateAndProvideEndTime(allSessions, endTime)
-
-  data.endTime = finalEnd;
-
-  if (Object.keys(data).length === 0) {
-    throw createError(400, "No valid update fields provided");
-  }
-
-  return await db.sessionRecord.updateMany({
-    where: { [field]: info },
-    data,
-  });
+  const result = await endIndividualSessions(payload);
+  return {sessionIds: activeGroupSessionIds};
 }
 
-export async function endIndividualSessions(payload, tx) {
- const { status, endTime, sessionIds } = payload;
+export async function endIndividualSessions(payload) {
 
-  const isBilled = await getSessionsWhere({status: 'BILLED', id: sessionIds});
-  if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
+  const { status, endTime, sessionIds } = payload;
 
-  const allSessions = await getSessionsWhere({id: sessionIds});
+  await validateBilledSession(sessionIds);
+
+  const allSessions = await getSessionsWhere({
+    id: {
+      in: sessionIds,
+    },
+  });
+
+  // console.log("allSessions", allSessions);
 
   const data = {};
   if (status) data.status = status;
 
-  const finalEnd = vaildateAndProvideEndTime(allSessions, endTime)
+  const finalEnd = vaildateAndProvideEndTime(allSessions, endTime);
 
   data.endTime = finalEnd;
 
@@ -165,28 +160,28 @@ export async function endIndividualSessions(payload, tx) {
     throw createError(400, "No valid update fields provided");
   }
 
-  return await db.sessionRecord.updateMany({
-    where: { 
+  return await prisma.sessionRecord.updateMany({
+    where: {
       id: {
-        in: sessionIds 
-      } 
+        in: sessionIds,
+      },
     },
     data,
   });
 }
 
 export async function updateSessionsByIds(payload, tx) {
-    const db = tx || prisma;
-    const { status, sessionIds } = payload;
+  const db = tx || prisma;
+  const { status, sessionIds } = payload;
 
   const data = {};
   if (status) data.status = status;
 
   return await db.sessionRecord.updateMany({
-    where: { 
+    where: {
       id: {
-        in: sessionIds 
-      } 
+        in: sessionIds,
+      },
     },
     data,
   });
@@ -196,7 +191,7 @@ export async function updateSessionById(id, payload) {
   // TO DO: add updated by who
   const { status, name, startTime, endTime, pricingId } = payload;
 
-   const currentSession = getSessionById(id);
+  const currentSession = getSessionById(id);
 
   if (!currentSession) {
     throw createError(404, "Session not found");
@@ -239,8 +234,12 @@ export async function getSessionsWhere(where) {
 }
 
 export async function validateBilledSession(sessionIds) {
-  const isBilled = await getSessionsWhere({status: 'BILLED', id: {in: sessionIds}});
-  if (isBilled.length > 0) throw createError(403, "Cannot create order for already billed session(s)");
+  const isBilled = await getSessionsWhere({
+    status: "BILLED",
+    id: { in: sessionIds },
+  });
+  if (isBilled.length > 0)
+    throw createError(403, "Cannot create order for already billed session(s)");
 
   return true;
 }

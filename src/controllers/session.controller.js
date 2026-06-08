@@ -101,7 +101,7 @@ export async function updateGroupSessionController(req, res, next) {
   const { id } = req.params;
 
   try {
-    const responses = await endGroupSessions("groupId", id, req.body);
+    const responses = await endGroupSessions(id, req.body);
     res.status(200).json({
       message: "Group session updated successfully.",
       responses,

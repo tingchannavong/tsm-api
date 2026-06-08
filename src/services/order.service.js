@@ -60,9 +60,9 @@ export async function createOrder(payload) {
 
     const result = await prisma.$transaction(async (tx) => {
       const orderPreview = await getOrderPreviewBySession({sessionIds: sessionIds});
-      console.log('orderPreview check items', orderPreview)
+      // console.log('orderPreview check items', orderPreview)
       const { grandTotal, items } = orderPreview;
-      console.log('grandTotal async await', grandTotal);
+      // console.log('grandTotal async await', grandTotal);
       const netTotal = grandTotal - discount;
 
       const newOrder = await tx.order.create({
@@ -83,13 +83,13 @@ export async function createOrder(payload) {
         // const updatedSessions = await endGroupSessions("id", {in: lineItem.sessionIds}, {status: "BILLED"}, tx);
         const updatedSessions = await updateSessionsByIds({status: "BILLED", sessionIds: lineItem.sessionIds}, tx);
         
-        console.log("updated sessions", updatedSessions);
-        console.log("order detail", newOrderDetail);
+        // console.log("updated sessions", updatedSessions);
+        // console.log("order detail", newOrderDetail);
       }
       return newOrder;
     });
 
-    console.log('result of transactions which is new order', result);
+    // console.log('result of transactions which is new order', result);
 
     return result;
   } catch (error) {
