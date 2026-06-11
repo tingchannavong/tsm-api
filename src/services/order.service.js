@@ -7,6 +7,7 @@ import {
   calculatePreviewOrderLineItems,
 } from "../billing/billing.domain.js";
 import { endGroupSessions, getSessionsByFilter, updateSessionById, updateSessionsByIds, validateBilledSession } from "./session.service.js";
+import { sanitizeFilters } from "../utils/core.js";
 
 export async function getOrderPreviewBySession(payload, tx) {
    const db = tx || prisma;
@@ -132,10 +133,7 @@ export async function createOrderDetail(orderId, lineItemData, tx) {
 export async function getAllOrdersWithDetails(query) {
   const { status, createdById, updatedById } = query;
 
-  const filters = {};
-  if (status) filters.status = status;
-  if (createdById) filters.createdById = createdById;
-  if (updatedById) filters.updatedById = updatedById;
+  const filters = sanitizeFilters({ status, createdById, updatedById });
 
   const result = await prisma.order.findMany({
     where: filters,

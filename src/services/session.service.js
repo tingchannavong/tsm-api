@@ -1,6 +1,6 @@
 import prisma from "../libs/prismaClient.js";
 import createError from "http-errors";
-import { accumulateSameStartTimes, cleanSessionsToGroups } from "../utils/core.js";
+import { accumulateSameStartTimes, cleanSessionsToGroups, sanitizeFilters } from "../utils/core.js";
 import { vaildateAndProvideEndTime } from "../utils/time.js";
 
 export async function createSessions(payload) {
@@ -89,10 +89,11 @@ export async function getAllSessions(payload) {
 
   // implement search name
 
-  const filters = {};
-  if (groupId) filters.groupId = groupId;
-  if (locationId && locationId !== 'all') filters.locationId = locationId;
-  if (status && status !== 'all') filters.status = status;
+  const filters = sanitizeFilters({ 
+    groupId: groupId === 'all' ? null : groupId, 
+    locationId: locationId === 'all' ? null : locationId, 
+    status: status === 'all' ? null : status, 
+   });
 
   const result = await prisma.sessionRecord.findMany({
     where: filters,
