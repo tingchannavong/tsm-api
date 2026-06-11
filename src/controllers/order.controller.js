@@ -28,7 +28,7 @@ export async function createOrderController(req, res, next) {
 
 export async function getOrdersController(req, res, next) {
   try {
-    const responses = await getAllOrdersWithDetails(req.query);
+    const responses = await getAllOrdersWithDetails(req.validated.query);
     res.status(200).json({
       message: "Orders retrieved successfully.",
       responses,

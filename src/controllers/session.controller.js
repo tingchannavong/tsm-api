@@ -25,7 +25,7 @@ export async function createSessionsController(req, res, next) {
 
 export async function getFilteredSessionsController(req, res, next) {
   try {
-    const responses = await getSessionsByFilter(req.query);
+    const responses = await getSessionsByFilter(req.validated.query);
 
     res.status(200).json({
       message: "Sessions by location retrieved successfully.",
@@ -39,7 +39,7 @@ export async function getFilteredSessionsController(req, res, next) {
 
 export async function getAllSessionsController(req, res, next) {
   try {
-    const responses = await getAllSessions(req.query);
+    const responses = await getAllSessions(req.validated.query);
 
     res.status(200).json({
       message: "All sessions retrieved successfully.",

@@ -26,11 +26,11 @@ export const CreateSessionSchema = z.object({
 
 export const GetSessionsSchema = z.object({
   query: z.object({
-    locationId: LocationIdScm.optional(),
+    locationId: LocationIdScm.or(z.literal('all')).optional(),
     groupId: NullGroupIdScm.optional(),
-    status: z.nativeEnum(SessionStatus).optional(),
-    page: z.number().min(1).max(100).default(1),
-    limit: z.number().max(50).default(20)
+    status: z.nativeEnum(SessionStatus).or(z.literal('all')).optional(),
+    page: z.coerce.number().min(1).max(100).default(1),
+    limit: z.coerce.number().max(50).default(20)
   })
 });
 

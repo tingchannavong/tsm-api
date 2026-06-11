@@ -3,7 +3,7 @@ import { checkAuth } from "../middlewares/checkAuth.js";
 import { validate } from "../middlewares/validate.js";
 import { idSchema, GetLocationSchema, CreateSessionSchema, GetSessionsSchema, UpdateSessionSchema, UpdateGroupSessionSchema } from "../validations/session.schema.js";
 import { createOrderController, deleteOrderByIdController, getOrderByIdController, getOrderPreviewController, getOrdersController, updateOrderByIdController } from "../controllers/order.controller.js";
-import { CreateOrderSchema, UpdateOrderSchema } from "../validations/order.schema.js";
+import { CreateOrderSchema, GetOrdersSchema, UpdateOrderSchema } from "../validations/order.schema.js";
 
 const orderRoutes = express.Router();
 
@@ -11,7 +11,7 @@ const orderRoutes = express.Router();
 orderRoutes.post('/preview', getOrderPreviewController);
 orderRoutes.post('', checkAuth, validate(CreateOrderSchema), createOrderController);
 
-orderRoutes.get('', checkAuth, getOrdersController);
+orderRoutes.get('', checkAuth, validate(GetOrdersSchema), getOrdersController);
 orderRoutes.get('/:id', checkAuth, validate(idSchema), getOrderByIdController);
 
 orderRoutes.patch('/:id', checkAuth, validate(UpdateOrderSchema), updateOrderByIdController)

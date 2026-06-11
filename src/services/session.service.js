@@ -83,19 +83,28 @@ export async function getSessionsByFilter(payload) {
 }
 
 export async function getAllSessions(payload) {
-  const { groupId, locationId, status } = payload;
+  const { groupId, locationId, status, page, limit } = payload;
+
+  const skip = (page - 1) * limit;
+
+  // implement search name
 
   const filters = {};
   if (groupId) filters.groupId = groupId;
-  if (locationId) filters.locationId = locationId;
-  if (status) filters.status = status;
+  if (locationId && locationId !== 'all') filters.locationId = locationId;
+  if (status && status !== 'all') filters.status = status;
 
   const result = await prisma.sessionRecord.findMany({
     where: filters,
+    skip: skip,
+    take: limit,
     include: {
       location: {
         select: { name: true },
       },
+    },
+    orderBy: {
+        createdAt: 'desc', // Show newest sessions first
     },
   });
 

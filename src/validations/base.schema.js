@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 export const IdScm = z.coerce.number().int().positive("Invalid ID");
 
-export const LocationIdScm = z.string().uuid("Invalid location ID");
+export const LocationIdScm = z.string().uuid("Invalid location ID");;
 
 export const GroupIdScm = z.string().trim().uuid("Invalid group ID");
 

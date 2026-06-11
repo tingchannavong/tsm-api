@@ -19,3 +19,11 @@ export const UpdateOrderSchema = z.object({
     // updatedById: IdScm
   })
 });
+
+export const GetOrdersSchema = z.object({
+  query: z.object({
+    status: z.nativeEnum(OrderStatus).or(z.literal('all')).optional(),
+    page: z.coerce.number().min(1).max(100).default(1),
+    limit: z.coerce.number().max(50).default(20)
+  })
+});
