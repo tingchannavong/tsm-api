@@ -7,8 +7,7 @@ import { CreateOrderSchema, GetOrdersSchema, UpdateOrderSchema } from "../valida
 
 const orderRoutes = express.Router();
 
-// TO DO validate data
-orderRoutes.post('/preview', getOrderPreviewController);
+orderRoutes.post('/preview', validate(CreateOrderSchema), getOrderPreviewController);
 orderRoutes.post('', checkAuth, validate(CreateOrderSchema), createOrderController);
 
 orderRoutes.get('', checkAuth, validate(GetOrdersSchema), getOrdersController);
