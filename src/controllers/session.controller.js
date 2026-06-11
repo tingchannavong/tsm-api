@@ -27,15 +27,10 @@ export async function getFilteredSessionsController(req, res, next) {
   try {
     const responses = await getSessionsByFilter(req.query);
 
-    let sameStartTimes;
-    responses.forEach((each) => {
-      sameStartTimes = accumulateSameStartTimes(each.items);
-    });
-
     res.status(200).json({
       message: "Sessions by location retrieved successfully.",
-      grouped: responses,
-      sameStartTimes,
+      grouped: responses.grouped,
+      sameStartTimes: responses.sameStartTimes,
     });
   } catch (error) {
     next(error);

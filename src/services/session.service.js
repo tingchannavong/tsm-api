@@ -1,6 +1,6 @@
 import prisma from "../libs/prismaClient.js";
 import createError from "http-errors";
-import { cleanSessionsToGroups } from "../utils/core.js";
+import { accumulateSameStartTimes, cleanSessionsToGroups } from "../utils/core.js";
 import { vaildateAndProvideEndTime } from "../utils/time.js";
 
 export async function createSessions(payload) {
@@ -65,22 +65,21 @@ export async function getSessionById(id) {
   });
 }
 
-// BELOW 2 GET FUNCTIONS CAN COMBINE INTO ONE
+
 export async function getSessionsByFilter(payload) {
-  const { groupId, locationId } = payload;
-
-  const filters = {};
-  if (groupId) filters.groupId = groupId;
-  if (locationId) filters.locationId = locationId;
-  filters.status = "ACTIVE";
-
-  const data = await prisma.sessionRecord.findMany({
-    where: filters,
-  });
-
+  payload.status = "ACTIVE";
+  const data = await getAllSessions(payload);
   const result = cleanSessionsToGroups(data);
 
-  return result;
+  let sameStartTimes;
+  result.forEach((each) => {
+    sameStartTimes = accumulateSameStartTimes(each.items);
+  });
+
+  return {
+    grouped: result,
+    sameStartTimes
+  };
 }
 
 export async function getAllSessions(payload) {

@@ -7,7 +7,7 @@ import { idSchema, GetLocationSchema, CreateSessionSchema, GetSessionsSchema, Up
 const router = express.Router();
 
 router.post('', validate(CreateSessionSchema), createSessionsController);
-router.get('/filter', validate(GetLocationSchema), getFilteredSessionsController);
+router.get('/filter', validate(GetSessionsSchema), getFilteredSessionsController);
 
 router.get('', checkAuth, validate(GetSessionsSchema), getAllSessionsController);
 // below done update end time only

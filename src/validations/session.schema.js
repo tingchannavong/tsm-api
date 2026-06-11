@@ -29,6 +29,8 @@ export const GetSessionsSchema = z.object({
     locationId: LocationIdScm.optional(),
     groupId: NullGroupIdScm.optional(),
     status: z.nativeEnum(SessionStatus).optional(),
+    page: z.number().min(1).max(100).default(1),
+    limit: z.number().max(50).default(20)
   })
 });
 
