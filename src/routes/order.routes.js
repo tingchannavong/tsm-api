@@ -3,13 +3,13 @@ import { checkAuth } from "../middlewares/checkAuth.js";
 import { validate } from "../middlewares/validate.js";
 import { idSchema, GetLocationSchema, CreateSessionSchema, GetSessionsSchema, UpdateSessionSchema, UpdateGroupSessionSchema } from "../validations/session.schema.js";
 import { createOrderController, deleteOrderByIdController, getOrderByIdController, getOrderPreviewController, getOrdersController, updateOrderByIdController } from "../controllers/order.controller.js";
-import { UpdateOrderSchema } from "../validations/order.schema.js";
+import { CreateOrderSchema, UpdateOrderSchema } from "../validations/order.schema.js";
 
 const orderRoutes = express.Router();
 
 // TO DO validate data
 orderRoutes.post('/preview', getOrderPreviewController);
-orderRoutes.post('', checkAuth, createOrderController);
+orderRoutes.post('', checkAuth, validate(CreateOrderSchema), createOrderController);
 
 orderRoutes.get('', checkAuth, getOrdersController);
 orderRoutes.get('/:id', checkAuth, validate(idSchema), getOrderByIdController);
