@@ -16,9 +16,10 @@ export const validate = (schema) => (req, res, next) => {
 
     next();
   } catch (error) {
-    // console.log(error.flatten().fieldErrors);
+
     // Show zod error message
     if (error.issues && error.issues.length > 0) {
+      console.log('we 1')
       next(
         createError(
           400,
@@ -27,6 +28,17 @@ export const validate = (schema) => (req, res, next) => {
       );
     }
 
+    // if (error.flatten) {
+    //   console.log('we 2')
+    //   const fieldErrors = error.flatten().fieldErrors;
+      
+    //   return next(
+    //     createError(400, "Validation Failed", { 
+    //       errors: fieldErrors 
+    //     })
+    //   );
+    // }
+   
     next(error);
   }
 };

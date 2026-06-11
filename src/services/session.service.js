@@ -1,7 +1,11 @@
 import prisma from "../libs/prismaClient.js";
 import createError from "http-errors";
-import { accumulateSameStartTimes, cleanSessionsToGroups, sanitizeFilters } from "../utils/core.js";
-import { vaildateAndProvideEndTime } from "../utils/time.js";
+import {
+  accumulateSameStartTimes,
+  cleanSessionsToGroups,
+  sanitizeFilters,
+} from "../utils/core.js";
+import { createDateRangeFilter, vaildateAndProvideEndTime } from "../utils/time.js";
 
 export async function createSessions(payload) {
   const {
@@ -65,7 +69,6 @@ export async function getSessionById(id) {
   });
 }
 
-
 export async function getSessionsByFilter(payload) {
   payload.status = "ACTIVE";
   const data = await getAllSessions(payload);
@@ -78,22 +81,25 @@ export async function getSessionsByFilter(payload) {
 
   return {
     grouped: result,
-    sameStartTimes
+    sameStartTimes,
   };
 }
 
-export async function getAllSessions(payload) {
-  const { groupId, locationId, status, page, limit } = payload;
+export async function getAllSessions(query) {
+  const { groupId, locationId, status, startDate, endDate, page, limit } =
+    query;
 
   const skip = (page - 1) * limit;
 
   // implement search name
 
-  const filters = sanitizeFilters({ 
-    groupId: groupId === 'all' ? null : groupId, 
-    locationId: locationId === 'all' ? null : locationId, 
-    status: status === 'all' ? null : status, 
-   });
+  const baseFilters = sanitizeFilters({
+    groupId: groupId === "all" ? null : groupId,
+    locationId: locationId === "all" ? null : locationId,
+    status: status === "all" ? null : status,
+  });
+
+  const filters = createDateRangeFilter("startTime", startDate, endDate, baseFilters);
 
   const result = await prisma.sessionRecord.findMany({
     where: filters,
@@ -105,7 +111,7 @@ export async function getAllSessions(payload) {
       },
     },
     orderBy: {
-        createdAt: 'desc', // Show newest sessions first
+      createdAt: "desc", // Show newest sessions first
     },
   });
 
@@ -134,18 +140,20 @@ export async function deleteSessionById(id) {
 export async function endGroupSessions(groupId, payload, tx) {
   const db = tx || prisma;
 
-  const activeGroupData = await getSessionsWhere({ status: "ACTIVE", groupId: groupId });
-  const activeGroupSessionIds = activeGroupData.map( each => each.id);
+  const activeGroupData = await getSessionsWhere({
+    status: "ACTIVE",
+    groupId: groupId,
+  });
+  const activeGroupSessionIds = activeGroupData.map((each) => each.id);
 
-  console.log('activeGroup', activeGroupSessionIds);
+  console.log("activeGroup", activeGroupSessionIds);
   payload.sessionIds = activeGroupSessionIds;
 
   const result = await endIndividualSessions(payload);
-  return {sessionIds: activeGroupSessionIds};
+  return { sessionIds: activeGroupSessionIds };
 }
 
 export async function endIndividualSessions(payload) {
-
   const { status, endTime, sessionIds } = payload;
 
   await validateBilledSession(sessionIds);

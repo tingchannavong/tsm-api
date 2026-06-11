@@ -36,3 +36,18 @@ export function vaildateAndProvideEndTime(sessionsArray, endTime = null) {
     });
   return finalEnd;
 }
+
+export function createDateRangeFilter(dateField, start, end, filtersObject) {
+  if (start && end) {
+    filtersObject[dateField] = {};
+    if (start) {
+      filtersObject[dateField].gte = start;
+    }
+
+    if (end) {
+      end.setUTCHours(23, 59, 59, 999)
+      filtersObject[dateField].lte = end;
+    }
+  }
+  return filtersObject;
+}

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { SessionStatus } from '@prisma/client';
-import { IdScm, LocationIdScm, PeopleCountScm, NullGroupIdScm, NameScm, DateTimeScm, GroupIdScm } from "./base.schema.js";
+import { IdScm, LocationIdScm, PeopleCountScm, NullGroupIdScm, NameScm, DateTimeScm, GroupIdScm, dateScm } from "./base.schema.js";
 
 export const idSchema = z.object({
   params: z.object({
@@ -30,7 +30,12 @@ export const GetSessionsSchema = z.object({
     groupId: NullGroupIdScm.optional(),
     status: z.nativeEnum(SessionStatus).or(z.literal('all')).optional(),
     page: z.coerce.number().min(1).max(100).default(1),
-    limit: z.coerce.number().max(50).default(20)
+    limit: z.coerce.number().max(50).default(20),
+    startDate: dateScm.optional(),
+    endDate: dateScm.optional(),
+  }).refine((data) => data.endDate >= data.startDate, {
+    message: "End date must be after the start date",
+    path: ["endDate"],
   })
 });
 
