@@ -86,7 +86,7 @@ export async function getSessionsByFilter(payload) {
 }
 
 export async function getAllSessions(query) {
-  const { groupId, locationId, status, startDate, endDate, page, limit } =
+  const { groupId, locationId, status, startDate, endDate, page, limit, name } =
     query;
 
   const skip = (page - 1) * limit;
@@ -100,6 +100,13 @@ export async function getAllSessions(query) {
   });
 
   const filters = createDateRangeFilter("startTime", startDate, endDate, baseFilters);
+
+  if (name && name.trim() !== '') {
+    filters.name = {
+      contains: name,
+      mode: 'insensitive',
+    };
+  }
 
   const result = await prisma.sessionRecord.findMany({
     where: filters,

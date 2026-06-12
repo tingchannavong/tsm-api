@@ -33,6 +33,7 @@ export const GetSessionsSchema = z.object({
     limit: z.coerce.number().max(50).default(20),
     startDate: dateScm.optional(),
     endDate: dateScm.optional(),
+    name: z.string().optional()
   })
 });
 
