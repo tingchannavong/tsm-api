@@ -103,8 +103,7 @@ export async function getAllSessions(query) {
 
   if (name && name.trim() !== '') {
     filters.name = {
-      contains: name,
-      mode: 'insensitive',
+      contains: name
     };
   }
 
