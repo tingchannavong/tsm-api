@@ -1,3 +1,5 @@
+import createError from "http-errors";
+
 export function getDurationMinutes(startTime, endTime) {
     const start = new Date(startTime);
   const end = new Date(endTime);
@@ -39,6 +41,7 @@ export function vaildateAndProvideEndTime(sessionsArray, endTime = null) {
 
 export function createDateRangeFilter(dateField, start, end, filtersObject) {
   if (start && end) {
+    if (start > end) throw createError(400, "End date cannot be before start date.")
     filtersObject[dateField] = {};
     if (start) {
       filtersObject[dateField].gte = start;

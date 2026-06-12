@@ -33,9 +33,6 @@ export const GetSessionsSchema = z.object({
     limit: z.coerce.number().max(50).default(20),
     startDate: dateScm.optional(),
     endDate: dateScm.optional(),
-  }).refine((data) => data.endDate >= data.startDate, {
-    message: "End date must be after the start date",
-    path: ["endDate"],
   })
 });
 
