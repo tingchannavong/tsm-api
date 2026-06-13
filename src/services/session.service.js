@@ -98,7 +98,7 @@ export async function getAllSessions(query) {
     locationId: locationId === "all" ? null : locationId,
     status: status === "all" ? null : status,
   });
-
+  
   const filters = createDateRangeFilter("startTime", startDate, endDate, baseFilters);
 
   if (name && name.trim() !== '') {

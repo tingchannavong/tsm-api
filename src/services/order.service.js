@@ -140,6 +140,9 @@ export async function getAllOrdersWithDetails(query) {
     include: {
       orderDetails: true,
     },
+    orderBy: {
+      createdAt: "desc"
+    }
   });
 
   return result;
