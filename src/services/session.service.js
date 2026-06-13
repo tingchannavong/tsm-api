@@ -86,28 +86,27 @@ export async function getSessionsByFilter(payload) {
 }
 
 export async function getAllSessions(query) {
-  const { groupId, locationId, status, startDate, endDate, page, limit, name } =
+  const { groupId, locationId, status, startDate, endDate, page = 1, limit = 10, name } =
     query;
 
   const skip = (page - 1) * limit;
-
-  // implement search name
 
   const baseFilters = sanitizeFilters({
     groupId: groupId === "all" ? null : groupId,
     locationId: locationId === "all" ? null : locationId,
     status: status === "all" ? null : status,
   });
-  
+
   const filters = createDateRangeFilter("startTime", startDate, endDate, baseFilters);
 
+  // search guest name
   if (name && name.trim() !== '') {
     filters.name = {
       contains: name
     };
   }
 
-  const result = await prisma.sessionRecord.findMany({
+  const [result, totalCount] = await Promise.all([prisma.sessionRecord.findMany({
     where: filters,
     skip: skip,
     take: limit,
@@ -119,9 +118,18 @@ export async function getAllSessions(query) {
     orderBy: {
       createdAt: "desc", // Show newest sessions first
     },
-  });
+  }),
+  prisma.sessionRecord.count({
+    where: filters,
+  })
+]);
 
-  return result;
+  return {
+    result,
+    totalRecords: totalCount,
+    totalPages: Math.ceil(totalCount / limit),
+    limit
+  };
 }
 
 export async function getSessionByGroupId(groupId) {
