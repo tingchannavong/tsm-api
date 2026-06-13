@@ -31,8 +31,8 @@ export const GetSessionsSchema = z.object({
     status: z.nativeEnum(SessionStatus).or(z.literal('all')).optional(),
     page: z.coerce.number().min(1).max(100).default(1),
     limit: z.coerce.number().max(50).default(20),
-    startDate: dateScm.optional(),
-    endDate: dateScm.optional(),
+    startDate: dateScm.or(z.literal("")).optional(),
+    endDate: dateScm.or(z.literal("")).optional(),
     name: z.string().optional()
   })
 });

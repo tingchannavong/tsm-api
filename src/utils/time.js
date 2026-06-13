@@ -40,7 +40,7 @@ export function vaildateAndProvideEndTime(sessionsArray, endTime = null) {
 }
 
 export function createDateRangeFilter(dateField, start, end, filtersObject) {
-  if (start && end) {
+  if (start && start !== "" && end && end !== "") {
     if (start > end) throw createError(400, "End date cannot be before start date.")
     filtersObject[dateField] = {};
     if (start) {
