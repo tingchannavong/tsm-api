@@ -48,7 +48,8 @@ Content-Type: application/json
 {
     "status": "ENDED", 
     "endTime": "2026-03-26T05:36:00.000Z",
-    "name": "Apple"
+    "name": "Apple",
+    "updatedById": 23
 }
 
     # "pricingId": 1

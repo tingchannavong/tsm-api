@@ -220,7 +220,7 @@ export async function updateSessionsByIds(payload, tx) {
 
 export async function updateSessionById(id, payload) {
   // TO DO: add updated by who
-  const { status, name, startTime, endTime, pricingId } = payload;
+  const { status, name, startTime, endTime, pricingId, updatedById } = payload;
 
   const currentSession = getSessionById(id);
 
@@ -253,6 +253,7 @@ export async function updateSessionById(id, payload) {
   if (startTime) data.startTime = new Date(startTime);
   if (endTime) data.endTime = new Date(endTime);
   if (pricingId) data.pricingId = pricingId;
+  if (updatedById) data.updatedById = Number(updatedById);
 
   if (Object.keys(data).length === 0) {
     throw createError(400, "No valid update fields provided");
