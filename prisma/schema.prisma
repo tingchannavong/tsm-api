@@ -37,7 +37,7 @@ model User {
   createdOrders   Order[]         @relation("OrderCreatedBy")
   updatedOrders   Order[]         @relation("OrderUpdatedBy")
   updatedSessions SessionRecord[] @relation("SessionUpdatedBy")
-  refreshTokens RefreshToken[]
+  refreshTokens   RefreshToken[]
 }
 
 model Location {
@@ -75,6 +75,8 @@ model SessionRecord {
   orderDetailId Int?
   updatedBy     User?         @relation("SessionUpdatedBy", fields: [updatedById], references: [id])
   updatedById   Int?
+  order         Order?        @relation(fields: [orderId], references: [id])
+  orderId       Int?
 }
 
 model OrderDetail {
@@ -101,18 +103,19 @@ enum OrderStatus {
 }
 
 model Order {
-  id           Int           @id @default(autoincrement())
-  grandTotal   Decimal       @db.Decimal(10, 2)
-  discount     Decimal?      @db.Decimal(10, 2)
-  netTotal     Decimal       @db.Decimal(10, 2)
-  status       OrderStatus   @default(PAID)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt @db.Timestamp(0)
+  id           Int             @id @default(autoincrement())
+  grandTotal   Decimal         @db.Decimal(10, 2)
+  discount     Decimal?        @db.Decimal(10, 2)
+  netTotal     Decimal         @db.Decimal(10, 2)
+  status       OrderStatus     @default(PAID)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt @db.Timestamp(0)
   orderDetails OrderDetail[]
-  createdBy    User?         @relation("OrderCreatedBy", fields: [createdById], references: [id])
+  createdBy    User?           @relation("OrderCreatedBy", fields: [createdById], references: [id])
   createdById  Int?
-  updatedBy    User?         @relation("OrderUpdatedBy", fields: [updatedById], references: [id])
+  updatedBy    User?           @relation("OrderUpdatedBy", fields: [updatedById], references: [id])
   updatedById  Int?
+  sessions     SessionRecord[]
 }
 
 model Pricing {
@@ -150,7 +153,7 @@ model RefreshToken {
   ipAddress String
   userAgent String
   userId    Int
-  user User @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 // not needed now, for future loyalty point feature
