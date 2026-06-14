@@ -72,7 +72,7 @@ export async function getSessionById(id) {
 export async function getSessionsByFilter(payload) {
   payload.status = "ACTIVE";
   const data = await getAllSessions(payload);
-  const result = cleanSessionsToGroups(data);
+  const result = cleanSessionsToGroups(data.result);
 
   let sameStartTimes;
   result.forEach((each) => {
