@@ -5,7 +5,7 @@ import {
   cleanSessionsToGroups,
   sanitizeFilters,
 } from "../utils/core.js";
-import { createDateRangeFilter, vaildateAndProvideEndTime } from "../utils/time.js";
+import { createDateRangeFilter, validateAndProvideEndTime } from "../utils/time.js";
 
 export async function createSessions(payload) {
   const {
@@ -183,7 +183,7 @@ export async function endIndividualSessions(payload) {
   const data = {};
   if (status) data.status = status;
 
-  const finalEnd = vaildateAndProvideEndTime(allSessions, endTime);
+  const finalEnd = validateAndProvideEndTime(allSessions, endTime);
 
   data.endTime = finalEnd;
 
@@ -238,9 +238,13 @@ export async function updateSessionById(id, payload) {
       : currentSession.startTime;
     const finalEnd = endTime ? new Date(endTime) : currentSession.endTime;
     if (finalEnd < finalStart) {
-      throw createError(400, "End time cannot be earlier than start time");
+      throw createError(400, "End time cannot be earlier than start time.");
     }
   }
+
+  // Business logic must: if endTime is provided status must be ended!
+  // should i throw error?
+  // case end time send blank?
 
   const data = {};
 

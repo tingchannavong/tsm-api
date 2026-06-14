@@ -29,7 +29,7 @@ export function convertMinToHour(minutes) {
     return hours.toFixed(2);
 }
 
-export function vaildateAndProvideEndTime(sessionsArray, endTime = null) {
+export function validateAndProvideEndTime(sessionsArray, endTime = null) {
   const  finalEnd = endTime ? new Date(endTime) : new Date();
   sessionsArray.forEach(session => {
       if (finalEnd < session.startTime) {
