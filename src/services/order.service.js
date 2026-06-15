@@ -8,6 +8,7 @@ import {
 } from "../billing/billing.domain.js";
 import { endGroupSessions, getSessionsByFilter, updateSessionById, updateSessionsByIds, validateBilledSession } from "./session.service.js";
 import { sanitizeFilters } from "../utils/core.js";
+import { createDateRangeFilter } from "../utils/time.js";
 
 export async function getOrderPreviewBySession(payload, tx) {
    const db = tx || prisma;
@@ -131,21 +132,37 @@ export async function createOrderDetail(orderId, lineItemData, tx) {
 }
 
 export async function getAllOrdersWithDetails(query) {
-  const { status, createdById, updatedById } = query;
+  const { id, status, createdById, updatedById, startDate, endDate, page, limit  } = query;
+  
+  const skip = (page - 1) * limit;
 
-  const filters = sanitizeFilters({ status, createdById, updatedById });
-
-  const result = await prisma.order.findMany({
+  const baseFilters = sanitizeFilters({ id, status, createdById, updatedById });
+   
+  const filters = createDateRangeFilter("createdAt", startDate, endDate, baseFilters);
+  
+  const [result, totalCount] = await Promise.all([prisma.order.findMany({
     where: filters,
+    skip: skip,
+    take: limit,
     include: {
       orderDetails: true,
     },
     orderBy: {
       createdAt: "desc"
     }
-  });
+  }),
+  prisma.order.count({
+    where: filters,
+  })
+]
+); 
 
-  return result;
+  return {
+    result,
+    totalRecords: totalCount,
+    totalPages: Math.ceil(totalCount / limit),
+    limit
+  };
 }
 
 export async function getOrderById(id) {

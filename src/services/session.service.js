@@ -86,7 +86,7 @@ export async function getSessionsByFilter(payload) {
 }
 
 export async function getAllSessions(query) {
-  const { groupId, locationId, status, startDate, endDate, page = 1, limit = 10, name } =
+  const { groupId, locationId, status, startDate, endDate, page, limit, name } =
     query;
 
   const skip = (page - 1) * limit;

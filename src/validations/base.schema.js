@@ -19,4 +19,4 @@ export const DateTimeScm = z.string().datetime();
 
 export const PriceScm = z.coerce.number().positive("Invalid Number");
 
-export const dateScm =  z.coerce.date();
+export const DateScm =  z.coerce.date();
