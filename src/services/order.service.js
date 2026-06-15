@@ -136,7 +136,7 @@ export async function getAllOrdersWithDetails(query) {
   
   const skip = (page - 1) * limit;
 
-  const baseFilters = sanitizeFilters({ id, status, createdById, updatedById });
+  const baseFilters = sanitizeFilters({ id, status: status === "all" ? null : status, createdById, updatedById });
    
   const filters = createDateRangeFilter("createdAt", startDate, endDate, baseFilters);
   
