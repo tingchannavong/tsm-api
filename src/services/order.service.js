@@ -13,6 +13,7 @@ import { createDateRangeFilter } from "../utils/time.js";
 export async function getOrderPreviewBySession(payload, tx) {
    const db = tx || prisma;
    const { sessionIds, endTime } = payload;
+  
 
   // session records of each id
   const sessions = await getSessionsByIds(sessionIds);
@@ -83,7 +84,7 @@ export async function createOrder(payload) {
         const newOrderDetail = await createOrderDetail(newOrder.id, lineItem, tx);
         // update sessionRecord to BILLED
         // const updatedSessions = await endGroupSessions("id", {in: lineItem.sessionIds}, {status: "BILLED"}, tx);
-        const updatedSessions = await updateSessionsByIds({status: "BILLED", sessionIds: lineItem.sessionIds}, tx);
+        const updatedSessions = await updateSessionsByIds({status: "BILLED", sessionIds: lineItem.sessionIds, orderId: newOrder.id}, tx);
         
         // console.log("updated sessions", updatedSessions);
         // console.log("order detail", newOrderDetail);
@@ -169,7 +170,11 @@ export async function getOrderById(id) {
   const result = await prisma.order.findUnique({
     where: { id },
     include: {
-      orderDetails: true,
+      orderDetails: {
+        include: {
+          sessions: true
+        }
+      },
     },
   });
 

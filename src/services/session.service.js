@@ -203,10 +203,11 @@ export async function endIndividualSessions(payload) {
 
 export async function updateSessionsByIds(payload, tx) {
   const db = tx || prisma;
-  const { status, sessionIds } = payload;
+  const { status, sessionIds, orderId } = payload;
 
   const data = {};
   if (status) data.status = status;
+  if (orderId) data.orderId = orderId;
 
   return await db.sessionRecord.updateMany({
     where: {

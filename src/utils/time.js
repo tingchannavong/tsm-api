@@ -30,8 +30,9 @@ export function convertMinToHour(minutes) {
 }
 
 export function validateAndProvideEndTime(sessionsArray, endTime = null) {
-  const  finalEnd = endTime ? new Date(endTime) : new Date();
+  let finalEnd;
   sessionsArray.forEach(session => {
+      finalEnd = session.endTime ? session.endTime : new Date();
       if (finalEnd < session.startTime) {
         throw createError(400, "End time cannot be earlier than start time.");
       }
