@@ -18,6 +18,7 @@ export async function createSessions(payload) {
 
   const totalPeople = Number(people) || 1;
   const result = [];
+  const startTime = new Date();
 
   // Create first session
   const first = await createSession({
@@ -25,6 +26,7 @@ export async function createSessions(payload) {
     locationId,
     groupId,
     pricingId,
+    startTime
   });
 
   const newGroupId = first.groupId;
@@ -42,6 +44,7 @@ export async function createSessions(payload) {
       locationId,
       groupId: newGroupId,
       pricingId,
+      startTime
     });
     result.push(session);
     indexOfName++;
@@ -57,6 +60,7 @@ export async function createSession(sessionData) {
       locationId: sessionData.locationId || undefined,
       groupId: sessionData.groupId || undefined,
       pricingId: sessionData.pricingId || undefined,
+      startTime: sessionData.startTime || undefined
     },
   });
 

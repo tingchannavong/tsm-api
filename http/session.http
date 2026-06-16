@@ -38,7 +38,7 @@ Content-Type: application/json
 }
 
 ### Get session by Id
-GET {{BASE_URL}}/api/sessions/45
+GET {{BASE_URL}}/api/sessions/151
 
 ### Update session by Id
 PATCH {{BASE_URL}}/api/sessions/45

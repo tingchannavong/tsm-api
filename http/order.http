@@ -39,7 +39,7 @@ GET {{BASE_URL}}/api/orders?status=PAID&id=32
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Get order by id
-GET {{BASE_URL}}/api/orders/2
+GET {{BASE_URL}}/api/orders/41
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Update order by id
