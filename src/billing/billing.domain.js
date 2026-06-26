@@ -24,6 +24,7 @@ export function calculateSessionLineItems(sessions, pricingPolicy, { endTime } =
     line.currencyCode = pricingPolicy.currency.code;
     line.unit = pricingPolicy.unit.name;
     line.basePrice = pricingPolicy.price;
+    line.name = session.name;
     items.push(line);
   });
 
@@ -58,6 +59,7 @@ export function calculatePreviewOrderLineItems(sessionItems) {
     line.durationMin = timeGroup[key][0].durationMin;
     line.basePrice = timeGroup[key][0].basePrice;
     line.sessionIds = timeGroup[key].map( session => session.sessionId );
+    line.names = timeGroup[key].map( session => session.name );
 
     orderItems.push(line);
   });
