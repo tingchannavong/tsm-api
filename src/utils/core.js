@@ -2,13 +2,24 @@ import { convertDateTimeTo24HrTime } from "../../../tsm-frontend/src/utils/time.
 
 export function sanitizeFilters(payload) {
   const filters = Object.entries(payload).reduce((acc, [key, value]) => {
-    if (value !== undefined && value !== null && value !== '') {
+    if (value !== undefined && value !== null && value !== "") {
       acc[key] = value;
     }
     return acc;
   }, {});
   return filters;
 }
+
+export const sanitizeData = (data, allowedFields) => {
+  // .entries make into entries [ [name: Ting] , etc. ]
+  const filteredAllowedEntries = Object.entries(data).filter(
+    ([key, value]) => allowedFields.includes(key) && value !== undefined,
+  );
+
+  // make into object
+  const sanitizedDataObject = Object.fromEntries(filteredAllowedEntries);
+  return sanitizedDataObject;
+};
 
 export function cleanSessionsToGroups(data) {
   const grouped = Object.values(

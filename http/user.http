@@ -7,8 +7,8 @@ POST {{BASE_URL}}/api/auth/login
 Content-Type: application/json
 
 {
-    "username": "superadmin",
-    "password": "admin88"
+    "username": "aek",
+    "password": "pppppp"
 }
 
 ### Get all users
@@ -20,17 +20,17 @@ GET {{BASE_URL}}/api/users/8
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Update user by id
-PATCH {{BASE_URL}}/api/users/3
+PATCH {{BASE_URL}}/api/users/23
 Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-        "username", 
-        "password", 
-        "email", 
-        "firstname", 
-        "lastname", 
-        "phone"
+        "username": "Aek", 
+        "password": "555555", 
+        "email": "aek@gmail.com", 
+        "firstname": "Aekkalard", 
+        "lastname": "Phouansy", 
+        "phone": "59991111"
 }
 
 ### Delete user by id

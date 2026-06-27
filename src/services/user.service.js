@@ -1,6 +1,15 @@
 import prisma from "../libs/prismaClient.js";
 import createError from "http-errors";
 import { hashString } from "../utils/crypt.js";
+import { sanitizeData } from "../utils/core.js";
+
+const UPDATE_USER_FIELDS = [
+  "username",
+  "email",
+  "firstname",
+  "lastname",
+  "phone"
+];
 
 export async function createUser(userData) {
   const { username, password, phone, email, firstname, lastname, role } =
@@ -30,34 +39,26 @@ export async function findUserByPhone(phone) {
   return found;
 }
 
-export async function updatePasswordById(id, newPassword) {
-  const hash = await hashString(newPassword);
-  const updatePassword = await prisma.user.update({
+export async function updateUserById(id, payload) {
+  const { password } = payload;
+  const data = sanitizeData(payload, UPDATE_USER_FIELDS)
+
+  if (password) {
+      const hash = await hashString(password);
+      data.password = hash;
+  }
+
+  const updateUserData = await prisma.user.update({
     where: { id },
-    data: { password: hash },
+    data: data
   });
-  return updatePassword;
+  return updateUserData;
 }
 
-export async function updateUserById(id, newPassword) {
-  const { status, updatedById } = payload;
-
-  const data = {};
-  if (status) data.status = status;
-  if (updatedById) data.updatedById = updatedById;
-
-  const hash = await hashString(newPassword);
-  const updatePassword = await prisma.user.update({
-    where: { id },
-    data: { password: hash },
-  });
-  return updatePassword;
-}
-
-export async function getAllUsers(userPayload) {
-
-   // CHECK IF ADMIN CAN VIEW
-  if (userPayload.role !== 'ADMIN') throw createError(403, `No permission to view all user data`); 
+export async function getAllUsers(role) {
+  // CHECK IF ADMIN CAN VIEW
+  if (role !== "ADMIN")
+    throw createError(403, `No permission to view this data`);
 
   const result = await prisma.user.findMany({});
 
@@ -66,12 +67,11 @@ export async function getAllUsers(userPayload) {
 
 export async function deleteUserById(id, role) {
   // CHECK IF ADMIN CAN DELETE
-  if (role !== 'ADMIN') throw createError(403, `No permission to delete`); 
+  if (role !== "ADMIN") throw createError(403, `No permission to delete`);
 
   const result = await prisma.user.delete({
-    where: {id}
+    where: { id },
   });
 
   return result;
 }
-

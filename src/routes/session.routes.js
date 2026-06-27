@@ -2,7 +2,8 @@ import express from "express";
 import { checkAuth } from "../middlewares/checkAuth.js";
 import { createSessionsController, deleteSessionController, endSessionsController, getAllSessionsController, getFilteredSessionsController, getSessionController, updateGroupSessionController, updateSessionController  } from "../controllers/session.controller.js";
 import { validate } from "../middlewares/validate.js";
-import { idSchema, GetLocationSchema, CreateSessionSchema, GetSessionsSchema, UpdateSessionSchema, UpdateGroupSessionSchema } from "../validations/session.schema.js";
+import { GetLocationSchema, CreateSessionSchema, GetSessionsSchema, UpdateSessionSchema, UpdateGroupSessionSchema } from "../validations/session.schema.js";
+import { IdParamSchema } from "../validations/base.schema.js";
 
 const router = express.Router();
 
@@ -14,8 +15,8 @@ router.get('', checkAuth, validate(GetSessionsSchema), getAllSessionsController)
 router.patch('/groups/:id', checkAuth, validate(UpdateGroupSessionSchema), updateGroupSessionController);
 router.patch('/end', checkAuth, endSessionsController);
 
-router.get('/:id', validate(idSchema), getSessionController);
+router.get('/:id', validate(IdParamSchema), getSessionController);
 router.patch('/:id', checkAuth, validate(UpdateSessionSchema), updateSessionController);
-router.delete('/:id', checkAuth, validate(idSchema), deleteSessionController);
+router.delete('/:id', checkAuth, validate(IdParamSchema), deleteSessionController);
 
 export default router;
