@@ -41,12 +41,15 @@ export async function findUserByPhone(phone) {
 
 export async function updateUserById(id, payload) {
   const { password } = payload;
-  const data = sanitizeData(payload, UPDATE_USER_FIELDS)
+  const data = sanitizeData(payload, UPDATE_USER_FIELDS);
 
   if (password) {
       const hash = await hashString(password);
       data.password = hash;
   }
+
+  // guard admin role can update
+  // guard only you can update your own data
 
   const updateUserData = await prisma.user.update({
     where: { id },
