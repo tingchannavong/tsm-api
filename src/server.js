@@ -6,6 +6,7 @@ import cors from "cors";
 import notFound from "./middlewares/notFound.middleware.js";
 import locationRoutes from "./routes/location.routes.js";
 import orderRoutes from "./routes/order.routes.js";
+import userRoutes from "./routes/user.routes.js";
 import pricingRoutes from "./routes/pricing.routes.js";
 import cookieParser from "cookie-parser";
 
@@ -26,6 +27,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/users', userRoutes);
 
 app.use('/api/locations', locationRoutes);
 app.use('/api/pricings', pricingRoutes);

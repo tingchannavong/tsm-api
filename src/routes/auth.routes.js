@@ -1,5 +1,5 @@
 import express from "express";
-import {checkUserController, getUserDataController, loginController, logOutController, refreshTokenController, registerController, resetPasswordController } from "../controllers/auth.controller.js";
+import {checkUserController, loginController, logOutController, refreshTokenController, registerController, resetPasswordController } from "../controllers/auth.controller.js";
 import { checkAuth, checkResetToken } from "../middlewares/checkAuth.js";
 // another clean way to write
 // import * as controller from "../controllers/authController.js";
@@ -12,7 +12,7 @@ router.post('/register', checkAuth, registerController);
 router.post('/login', loginController);
 router.post('/logout', checkAuth, logOutController);
 
-router.get('/me', checkAuth, getUserDataController);
+// router.get('/me', checkAuth, getUserDataController);
 
 router.post('/forgot-password', checkUserController);
 

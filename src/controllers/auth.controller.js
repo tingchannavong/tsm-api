@@ -1,7 +1,5 @@
 import {
   createUser,
-  findUserById,
-  findUserByPhone,
   logOut,
   manageRefreshToken,
   updatePasswordById,
@@ -10,6 +8,7 @@ import {
 import { generateToken } from "../utils/jwt.js";
 import createError from "http-errors";
 import "dotenv/config";
+import { findUserByPhone } from "../services/user.service.js";
 
 export async function registerController(req, res, next) {
   const { username, password, phone, email, firstname, lastname, role } =
@@ -62,25 +61,25 @@ export async function loginController(req, res, next) {
   }
 }
 
-export async function getUserDataController(req, res, next) {
-  try {
-    const { id, role, username } = req.userPayload;
-    const userData = await findUserById(id);
+// export async function getUserDataController(req, res, next) {
+//   try {
+//     const { id, role, username } = req.userPayload;
+//     const userData = await findUserById(id);
 
-    res.json({
-      message: "Verify success",
-      email: userData.email,
-      username,
-      id,
-      role,
-      firstname: userData.firstname,
-      lastname: userData.lastname,
-      phone: userData.phone
-    });
-  } catch (error) {
-    next(error);
-  }
-}
+//     res.json({
+//       message: "Verify success",
+//       email: userData.email,
+//       username,
+//       id,
+//       role,
+//       firstname: userData.firstname,
+//       lastname: userData.lastname,
+//       phone: userData.phone
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// }
 
 export async function refreshTokenController(req, res, next) {
   try {

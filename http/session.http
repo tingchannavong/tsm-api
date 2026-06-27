@@ -22,7 +22,7 @@ GET {{BASE_URL}}/api/sessions/filter?locationId={{LOC3}}&groupId={{RockyGROUP}}
 ### Get all sessions
 # locationId={{locationId}}&groupId={{groupId}}
 # GET {{BASE_URL}}/api/sessions
-GET {{BASE_URL}}/api/sessions?status=ENDED
+GET {{BASE_URL}}/api/sessions
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 ### Create session

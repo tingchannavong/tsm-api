@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import prisma from "../libs/prismaClient.js";
 import { generateToken, verifyUserToken } from "../utils/jwt.js";
 import createError from "http-errors";
+import { findUserById, findUserByUsername } from "./user.service.js";
 
 async function hashString(string, saltRounds) {
   const hash = await bcrypt.hash(string, saltRounds);
@@ -41,16 +42,6 @@ export async function createTokenIdentity(resetToken, userId) {
   return res;
 }
 
-export async function findUserByUsername(username) {
-  const found = await prisma.user.findUnique({ where: { username } });
-  return found;
-}
-
-export async function findUserById(id) {
-  const found = await prisma.user.findUnique({ where: { id } });
-  return found;
-}
-
 export async function verifyUserAuth(username, password, ipAddress, userAgent) {
   const user = await findUserByUsername(username);
 
@@ -76,11 +67,6 @@ export async function verifyUserAuth(username, password, ipAddress, userAgent) {
       email: user.email
     }
   };
-}
-
-export async function findUserByPhone(phone) {
-  const found = await prisma.user.findUnique({ where: { phone } });
-  return found;
 }
 
 // REFRESH TOKEN SAVE TO DB
