@@ -10,30 +10,31 @@ import userRoutes from "./routes/user.routes.js";
 import pricingRoutes from "./routes/pricing.routes.js";
 import cookieParser from "cookie-parser";
 
-const app = express(); 
+const app = express();
 const PORT = process.env.PORT;
 
 console.log("Hit the route!");
 
-app.use(cors({
+app.use(
+  cors({
     origin: "http://localhost:5173", // to let app accept request from this host
-    credentials: true // to accept refresh token from HTTP cookies header
-})
+    credentials: true, // to accept refresh token from HTTP cookies header
+  }),
 );
 
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/api/auth', authRoutes);
-app.use('/api/sessions', sessionRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/users', userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/sessions", sessionRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/users", userRoutes);
 
-app.use('/api/locations', locationRoutes);
-app.use('/api/pricings', pricingRoutes);
+app.use("/api/locations", locationRoutes);
+app.use("/api/pricings", pricingRoutes);
 
-app.get('/', (re, res) => {
-    res.send('welcome to backend API, prisma & JWT login project v0.1.0');
+app.get("/", (re, res) => {
+  res.send("welcome to backend API, prisma & JWT login project v0.1.0");
 });
 
 app.use(notFound);
@@ -42,6 +43,5 @@ app.use(notFound);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-    console.log(`server is running at http://localhost:${PORT}`);
+  console.log(`server is running at http://localhost:${PORT}`);
 });
-

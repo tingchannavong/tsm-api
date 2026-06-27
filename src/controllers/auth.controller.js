@@ -1,8 +1,7 @@
 import {
-  createUser,
   logOut,
   manageRefreshToken,
-  updatePasswordById,
+  registerUser,
   verifyUserAuth,
 } from "../services/auth.services.js";
 import { generateToken } from "../utils/jwt.js";
@@ -30,8 +29,8 @@ export async function registerController(req, res, next) {
   }
 
   try {
-    const user = await createUser(userData);
-    res.status(201).json({ message: "user added successfully", user });
+    const user = await registerUser(userData);
+    res.status(201).json({ message: "User added successfully", user });
   } catch (error) {
     next(error);
   }
@@ -60,26 +59,6 @@ export async function loginController(req, res, next) {
     next(error);
   }
 }
-
-// export async function getUserDataController(req, res, next) {
-//   try {
-//     const { id, role, username } = req.userPayload;
-//     const userData = await findUserById(id);
-
-//     res.json({
-//       message: "Verify success",
-//       email: userData.email,
-//       username,
-//       id,
-//       role,
-//       firstname: userData.firstname,
-//       lastname: userData.lastname,
-//       phone: userData.phone
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// }
 
 export async function refreshTokenController(req, res, next) {
   try {
@@ -146,7 +125,8 @@ export async function resetPasswordController(req, res) {
   // todo: check that identity exists
 
   // if yes, hash the new password and save to db
-  const userData = await updatePasswordById(id, newPassword);
+  // need to write reset password logic, check
+  // const userData = await updatePasswordById(id, newPassword);
 
   // todo: clear token data table where id
 

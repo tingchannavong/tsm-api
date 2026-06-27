@@ -11,6 +11,7 @@ export function checkAuth(req, res, next) {
         try {
             // verify with jwt
             const decode = verifyUserToken(access_token, process.env.SECRET_KEY);
+            // console.log('decode', decode);
             // save decoded data as user payload in re.userPayload to be sent to next step
             req.userPayload = decode;
             next();

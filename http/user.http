@@ -1,0 +1,38 @@
+@BASE_URL = {{baseUrl}}
+@ACCESS_TOKEN = {{login.response.body.access_token}}
+
+### Login
+# @name login
+POST {{BASE_URL}}/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "superadmin",
+    "password": "admin88"
+}
+
+### Get all users
+GET {{BASE_URL}}/api/users/
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+### Get user by id
+GET {{BASE_URL}}/api/users/8
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+### Update user by id
+PATCH {{BASE_URL}}/api/users/3
+Authorization: Bearer {{ACCESS_TOKEN}}
+Content-Type: application/json
+
+{
+        "username", 
+        "password", 
+        "email", 
+        "firstname", 
+        "lastname", 
+        "phone"
+}
+
+### Delete user by id
+DELETE {{BASE_URL}}/api/users/3
+Authorization: Bearer {{ACCESS_TOKEN}}

@@ -1,38 +1,20 @@
-import bcrypt from "bcrypt";
 import prisma from "../libs/prismaClient.js";
 import { generateToken, verifyUserToken } from "../utils/jwt.js";
 import createError from "http-errors";
-import { findUserById, findUserByUsername } from "./user.service.js";
+import { createUser, findUserById, findUserByUsername } from "./user.service.js";
+import { compareStrings, hashString } from "../utils/crypt.js";
 
-async function hashString(string, saltRounds) {
-  const hash = await bcrypt.hash(string, saltRounds);
-  return hash;
-}
+export async function registerUser(registrationData) {
 
-export async function createUser(userData) {
-  const { username, password, phone, email, firstname, lastname, role } =
-    userData;
-
-  const hash = await hashString(password, 10);
-
-  const result = await prisma.user.create({
-    data: { username, phone, email, firstname, lastname, password: hash, role },
-  });
-
-  return result;
-}
-
-export async function updatePasswordById(id, newPassword) {
-  const hash = await hashString(newPassword, 10);
-  const updatePassword = await prisma.user.update({
-    where: { id },
-    data: { password: hash },
-  });
-  return updatePassword;
+  const user = await createUser(registrationData);
+  
+  const token = generateToken(user);
+  
+  return { user, token };
 }
 
 export async function createTokenIdentity(resetToken, userId) {
-  const hash = await hashString(resetToken, 3);
+  const hash = await hashString(resetToken);
   const res = await prisma.token.create({
     data: {
       token: hash,
@@ -48,7 +30,7 @@ export async function verifyUserAuth(username, password, ipAddress, userAgent) {
   if (!user) {
     throw createError(400, "Invalid username or password.");
   }
-  const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await compareStrings(password, user.password);
 
   if (!isMatch) {
     throw createError(400, "Invalid credentials");
