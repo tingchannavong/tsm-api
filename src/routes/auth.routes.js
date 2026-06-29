@@ -12,12 +12,11 @@ router.post('/register', checkAuth, registerController);
 router.post('/login', loginController);
 router.post('/logout', checkAuth, logOutController);
 
-// router.get('/me', checkAuth, getUserDataController);
-
-router.post('/forgot-password', checkUserController);
-
 router.get('/refresh-token', refreshTokenController);
 
+router.post('/forgot-password', checkUserController);
 router.patch('/reset-password/:token', checkResetToken, resetPasswordController)
+
+router.post('/users/:id/change-password', checkAuth, resetPasswordController)
 
 export default router;

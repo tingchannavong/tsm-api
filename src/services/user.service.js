@@ -39,6 +39,21 @@ export async function findUserByPhone(phone) {
   return found;
 }
 
+export async function allowUpdateUserService(currentUser, id, payload) {
+  const isOwner = currentUser.id === id;
+  const isAdmin = currentUser.role === 'ADMIN';
+
+  if (!isOwner && !isAdmin) {
+    throw new Error("Forbidden: You do not have permission to update this user.");
+  }
+
+  if (payload.role && !isAdmin) {
+    throw new Error("Forbidden: Only admins can change user roles.");
+  }
+
+  return await updateUserById(id, payload);
+}
+
 export async function updateUserById(id, payload) {
   const { password } = payload;
   const data = sanitizeData(payload, UPDATE_USER_FIELDS);
@@ -47,9 +62,6 @@ export async function updateUserById(id, payload) {
       const hash = await hashString(password);
       data.password = hash;
   }
-
-  // guard admin role can update
-  // guard only you can update your own data
 
   const updateUserData = await prisma.user.update({
     where: { id },

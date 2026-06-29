@@ -1,10 +1,10 @@
 import createError from "http-errors";
 import "dotenv/config";
 import {
+  allowUpdateUserService,
   deleteUserById,
   findUserById,
   getAllUsers,
-  updateUserById,
 } from "../services/user.service.js";
 
 export async function getUserData(req, res, next) {
@@ -43,9 +43,13 @@ export async function getUsers(req, res, next) {
 
 export async function updateUser(req, res, next) {
   const { id } = req.params;
+  const currentUser = {
+    id: req.userPayload.id,
+    role: req.userPayload.role
+  }
 
   try {
-    const responses = await updateUserById(id, req.body);
+    const responses = await allowUpdateUserService(currentUser, id, req.body);
     delete responses.password;
     
     res.status(200).json({
