@@ -1,16 +1,25 @@
 import prisma from "../libs/prismaClient.js";
 import { generateToken, verifyUserToken } from "../utils/jwt.js";
 import createError from "http-errors";
-import { createUser, findUserById, findUserByUsername } from "./user.service.js";
+import { createUser, findUserById, findUserByUsername, updateUserById, USER_FIELDS } from "./user.service.js";
 import { compareStrings, hashString } from "../utils/crypt.js";
+import { havePermissionToEdit, sanitizeData } from "../utils/core.js";
 
-export async function registerUser(registrationData) {
+export async function registerUser(currentUser, payload) {
+   // check role only ADMIN allow to add
+    if (currentUser.role !== "ADMIN") {
+      next(createError(401, "Invalid permission"));
+    }
 
+  const registrationData = sanitizeData(payload, USER_FIELDS)
+  
   const user = await createUser(registrationData);
   
-  const token = generateToken(user);
+  // const token = generateToken(user);
   
-  return { user, token };
+  return { user, 
+    // token 
+    };
 }
 
 export async function createTokenIdentity(resetToken, userId) {
@@ -147,3 +156,21 @@ export async function createAuthTokens(user, ipAddress, userAgent) {
     refreshToken
   };
 }
+
+export async function changeUserPassword(currentUser, id, payload) {
+  havePermissionToEdit(currentUser, id);
+
+  const {oldPassword, newPassword} = payload;
+  // check old password
+  const user = await findUserById(id);
+
+  const isMatch = compareStrings(oldPassword, user.password)
+
+  if (!isMatch) {
+    throw createError(400, "Invalid credentials");
+  }
+
+  return await updateUserById(id, {password: newPassword})
+
+
+} 

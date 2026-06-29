@@ -56,3 +56,17 @@ export function accumulateSameStartTimes(sessions) {
 }
 
 // {16:39: {startTime: 16:39, items: [Object, obj]}, }
+
+export function havePermissionToEdit(currentUser, id, payloadIsRole = null) {
+    const isOwner = currentUser.id === id;
+    const isAdmin = currentUser.role === 'ADMIN';
+  
+    if (!isOwner && !isAdmin) {
+      throw new Error("Forbidden: You do not have permission.");
+    }
+    if (payloadIsRole) {
+      if (payloadIsRole && !isAdmin) {
+        throw new Error("Forbidden: Only admins can change user roles.");
+      }
+    }
+}

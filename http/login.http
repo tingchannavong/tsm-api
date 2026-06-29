@@ -28,12 +28,23 @@ Content-Type: application/json
 
 {
     "username": "superadmin",
-    "password": "admin88"
+    "password": "admin999"
 }
 
 ### GET my info
 GET {{BASE_URL}}/api/auth/me
 Authorization: Bearer {{ACCESS_TOKEN}}
+
+### Change password
+POST  {{BASE_URL}}/api/auth/change-password/users/1
+Authorization: Bearer {{ACCESS_TOKEN}}
+Content-Type: application/json
+
+{
+    "oldPassword": "admin88",
+    "newPassword": "admin999",
+    "confirmPassword": "admin999"
+}
 
 // TO BE IMPLEMENTED LATER 
 ### POST forgot password

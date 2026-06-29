@@ -1,4 +1,5 @@
 import {
+  changeUserPassword,
   logOut,
   manageRefreshToken,
   registerUser,
@@ -10,26 +11,8 @@ import "dotenv/config";
 import { findUserByPhone } from "../services/user.service.js";
 
 export async function registerController(req, res, next) {
-  const { username, password, phone, email, firstname, lastname, role } =
-    req.body;
-
-  const userData = {
-    username,
-    password,
-    phone,
-    email,
-    firstname,
-    lastname,
-    role,
-  };
-
-  // check role only ADMIN allow to add
-  if (req.userPayload.role !== "ADMIN") {
-    next(createError(401, "Invalid permission"));
-  }
-
   try {
-    const user = await registerUser(userData);
+    const user = await registerUser(req.userPayload, req.body);
     res.status(201).json({ message: "User added successfully", user });
   } catch (error) {
     next(error);
@@ -87,6 +70,23 @@ export async function logOutController(req, res, next) {
     const result = await logOut(refreshToken);
     
     res.status(200).json({ message: "Log out success"});
+  } catch (error) {
+    next(error)
+  }
+}
+
+export async function changePasswordController(req, res, next) {
+  const { id } = req.params;
+  const currentUser = {
+    id: req.userPayload.id,
+    role: req.userPayload.role
+  }
+
+  try {
+    // CHANGE PASSWORD SERVICE  
+    const responses = await changeUserPassword(currentUser, id, req.body)  
+
+    res.status(200).json({ message: "Password change successful."});
   } catch (error) {
     next(error)
   }

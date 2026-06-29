@@ -1,6 +1,8 @@
 import express from "express";
-import {checkUserController, loginController, logOutController, refreshTokenController, registerController, resetPasswordController } from "../controllers/auth.controller.js";
+import {changePasswordController, checkUserController, loginController, logOutController, refreshTokenController, registerController, resetPasswordController } from "../controllers/auth.controller.js";
 import { checkAuth, checkResetToken } from "../middlewares/checkAuth.js";
+import { validate } from "../middlewares/validate.js";
+import { ChangePasswordSchema } from "../validations/auth.schema.js";
 // another clean way to write
 // import * as controller from "../controllers/authController.js";
 // controller.login
@@ -17,6 +19,6 @@ router.get('/refresh-token', refreshTokenController);
 router.post('/forgot-password', checkUserController);
 router.patch('/reset-password/:token', checkResetToken, resetPasswordController)
 
-router.post('/users/:id/change-password', checkAuth, resetPasswordController)
+router.post('/change-password/users/:id', checkAuth, validate(ChangePasswordSchema), changePasswordController)
 
 export default router;

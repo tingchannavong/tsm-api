@@ -1,14 +1,16 @@
 import prisma from "../libs/prismaClient.js";
 import createError from "http-errors";
 import { hashString } from "../utils/crypt.js";
-import { sanitizeData } from "../utils/core.js";
+import { havePermissionToEdit, sanitizeData } from "../utils/core.js";
 
-const UPDATE_USER_FIELDS = [
-  "username",
+export const USER_FIELDS = [
+   "username",
   "email",
   "firstname",
   "lastname",
-  "phone"
+  "phone",
+  "password",
+  "role" 
 ];
 
 export async function createUser(userData) {
@@ -40,23 +42,13 @@ export async function findUserByPhone(phone) {
 }
 
 export async function allowUpdateUserService(currentUser, id, payload) {
-  const isOwner = currentUser.id === id;
-  const isAdmin = currentUser.role === 'ADMIN';
-
-  if (!isOwner && !isAdmin) {
-    throw new Error("Forbidden: You do not have permission to update this user.");
-  }
-
-  if (payload.role && !isAdmin) {
-    throw new Error("Forbidden: Only admins can change user roles.");
-  }
-
+  havePermissionToEdit(currentUser, id, payload.role);
   return await updateUserById(id, payload);
 }
 
 export async function updateUserById(id, payload) {
   const { password } = payload;
-  const data = sanitizeData(payload, UPDATE_USER_FIELDS);
+  const data = sanitizeData(payload, USER_FIELDS);
 
   if (password) {
       const hash = await hashString(password);
