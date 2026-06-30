@@ -38,7 +38,7 @@ model User {
   updatedOrders   Order[]         @relation("OrderUpdatedBy")
   updatedSessions SessionRecord[] @relation("SessionUpdatedBy")
   refreshTokens   RefreshToken[]
-  securityStamp String?
+  securityStamp DateTime?
   // resetTokens     ResetToken[]
 }
 

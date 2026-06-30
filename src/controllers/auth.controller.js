@@ -97,29 +97,33 @@ export async function changePasswordController(req, res, next) {
 }
 
 // Later
-export async function checkUserController(req, res) {
+export async function checkUserController(req, res, next) {
   try {
     // Create reset link SERVICE
     const responses = await createResetPasswordLink(req.body);
     res
       .status(200)
-      .json({ message: "Reset password link successfully created", responses });
+      .json({ message: "Reset password email successfully sent", responses });
   } catch (error) {
     next(error);
   }
 }
 
-export async function resetPasswordController(req, res) {
+export async function resetPasswordController(req, res, next) {
   try {
     // reset password service
-    const responses = await resetUserPassword(req.userPayload, req.body);
-    res
-      .status(200)
-      .json({ message: "Password reset successfully!", responses });
+    const result = await resetUserPassword(req.userPayload, req.body);
+    res.status(200).json({
+      message: "Password reset successfully!",
+      responses: {
+        id: result.id,
+        username: result.username,
+        email: result.email,
+      },
+    });
   } catch (error) {
     next(error);
   }
-
 }
 
 // Bonus security save reset token in db

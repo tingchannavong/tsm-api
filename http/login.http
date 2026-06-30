@@ -1,7 +1,7 @@
 # cmd + alt + E change environment of rest toggle: local / production 
 @BASE_URL = {{$dotenv BASE_URL}}
 @ACCESS_TOKEN = {{login.response.body.access_token}}
-@RESET_TOKEN = {{reset.response.body.resetToken}}
+@RESET_TOKEN = {{reset.response.body.responses.resetToken}}
 
 ### GET home
 GET  {{BASE_URL}}
@@ -27,9 +27,14 @@ POST {{BASE_URL}}/api/auth/login
 Content-Type: application/json
 
 {
-    "username": "superadmin",
-    "password": "admin888"
+    "username": "aek",
+    "password": "hahaha"
 }
+
+# {
+#     "username": "superadmin",
+#     "password": "admin888"
+# }
 
 ### GET my info
 GET {{BASE_URL}}/api/auth/me
@@ -46,7 +51,6 @@ Content-Type: application/json
     "confirmPassword": "admin888"
 }
 
-// TO BE IMPLEMENTED LATER 
 ### POST forgot password
 # @name reset
 POST {{BASE_URL}}/api/auth/forgot-password

@@ -188,48 +188,47 @@ export async function createResetPasswordLink(payload) {
   if (!user) {
     throw createError(401, "This email is not registered in our system.");
   }
-
-  console.log(user);
-  console.log("this user email exist, creating reset token");
   
   // write to security stamp to user table
   const timeStamp = new Date();
-  await updateUserById(id, { securityStamp: timeStamp });
-
-  const jwtPayload = { id: user.id, securityStamp:  timeStamp};
+  await updateUserById(user.id, { securityStamp: timeStamp });
 
   // call jwt function to create token
+  const jwtPayload = { id: user.id, securityStamp:  timeStamp};
   const resetToken = generateToken(jwtPayload, process.env.RESET_KEY, "10m");
 
-  // create reset link that front-end requires
-  const resetLink = `/reset-password/${resetToken}`;
-
-  // send reset link to email
-  const clientURL = process.env.EMAIL_USER;
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "TSM Password Reset Request",
-    html: `<p>Click <a href="${clientURL}${resetLink}">here</a> to reset your password. The link expires in 10 minutes.</p>`
+  try {
+    // create reset link that front-end requires
+    const resetLink = process.env.CLIENT_BASE_URL + `/reset-password/${resetToken}`;
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "TSM Password Reset Request",
+      html: `<p>Click <a href="${resetLink}">here</a> to reset your password. The link expires in 10 minutes.</p>`
+    }
+    // send reset link to email
+    await transporter.sendMail(mailOptions);
+    console.log('reset email sent');
+  } catch (error) {
+    throw createError(500, "Error sending email to user.")
   }
 
-  // TODO 
-  // which front end need to use the exact same at path for react router to link to page
-  // front end makes page  for click in real life
-  return { resetLink, result };
+  return { resetLink, 
+    resetToken };
 }
 
 export async function resetUserPassword(currentUser, payload) {
   const { newPassword } = payload;
   const { id, securityStamp } = currentUser;
-
-  const user = findUserById(id);
-
+  
+  const user = await findUserById(id);
+  
   if (!user) {
     throw createError(401, "This user is no longer registered in our system.");
   }
-
-  if (securityStamp !== user.securityStamp) {
+  
+  const securityStampString = user.securityStamp.toISOString();
+  if (securityStamp !== securityStampString) {
     throw createError(403, "Forbidden: invalid security stamp.");
   }
 

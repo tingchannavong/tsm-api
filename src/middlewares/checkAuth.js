@@ -23,12 +23,14 @@ export function checkAuth(req, res, next) {
 
 export function checkResetToken(req, res, next) {
     const reset_token = req.params.token;
+    console.log('re at check reset token', reset_token)
     try {
         // check that token is valid in jwt
         const decode = verifyUserToken(reset_token, process.env.RESET_KEY); 
         
         // create a new key in re object to be sent to next step
         req.userPayload = decode;
+        // console.log('decode', decode)
         // if yes next
         next();
     } catch (error) {
