@@ -11,6 +11,7 @@ import {
 } from "./user.service.js";
 import { compareStrings, hashString } from "../utils/crypt.js";
 import { havePermissionToEdit, sanitizeData } from "../utils/core.js";
+import transporter from "../utils/mailer.js";
 
 export async function registerUser(currentUser, payload) {
   // check role only ADMIN allow to add
@@ -189,24 +190,30 @@ export async function createResetPasswordLink(payload) {
   }
 
   console.log(user);
-  // check if phone exist
-  console.log("this user phone exist, creating reset token");
+  console.log("this user email exist, creating reset token");
   
   // write to security stamp to user table
   const timeStamp = new Date();
   await updateUserById(id, { securityStamp: timeStamp });
 
-  const payload = { id: user.id, securityStamp:  timeStamp};
+  const jwtPayload = { id: user.id, securityStamp:  timeStamp};
 
   // call jwt function to create token
-  const resetToken = generateToken(payload, process.env.RESET_KEY, "10m");
+  const resetToken = generateToken(jwtPayload, process.env.RESET_KEY, "10m");
 
-  // create reset link
-  const resetLink = `/auth/reset-password/${resetToken}`;
-  
-  // TO DO
+  // create reset link that front-end requires
+  const resetLink = `/reset-password/${resetToken}`;
+
   // send reset link to email
-  // send resetLink to front end
+  const clientURL = process.env.EMAIL_USER;
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "TSM Password Reset Request",
+    html: `<p>Click <a href="${clientURL}${resetLink}">here</a> to reset your password. The link expires in 10 minutes.</p>`
+  }
+
+  // TODO 
   // which front end need to use the exact same at path for react router to link to page
   // front end makes page  for click in real life
   return { resetLink, result };
@@ -214,7 +221,7 @@ export async function createResetPasswordLink(payload) {
 
 export async function resetUserPassword(currentUser, payload) {
   const { newPassword } = payload;
-  const { id, email } = currentUser;
+  const { id, securityStamp } = currentUser;
 
   const user = findUserById(id);
 
@@ -222,14 +229,14 @@ export async function resetUserPassword(currentUser, payload) {
     throw createError(401, "This user is no longer registered in our system.");
   }
 
-  // CHECK THAT security stamp matches
+  if (securityStamp !== user.securityStamp) {
+    throw createError(403, "Forbidden: invalid security stamp.");
+  }
 
-  // update security stamp 
-
-  return await updateUserById(id, { password: newPassword });
+  return await updateUserById(id, { password: newPassword, securityStamp: new Date() });
 }
 
-// MORE SECURITY
+// SECURITY FOR RESET PASSWORD IN RESET DB
 // export async function createResetTokenIdentity(resetToken, userId) {
 //   const hash = await hashString(resetToken);
 //   const res = await prisma.token.create({
