@@ -197,15 +197,16 @@ export async function createResetPasswordLink(payload) {
   const jwtPayload = { id: user.id, securityStamp:  timeStamp};
   const resetToken = generateToken(jwtPayload, process.env.RESET_KEY, "10m");
 
+  // create reset link that front-end requires
+  const resetLink = process.env.CLIENT_BASE_URL + `/reset-password/${resetToken}`;
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "TSM Password Reset Request",
+    html: `<p>Click <a href="${resetLink}">here</a> to reset your password. The link expires in 10 minutes.</p>`
+  }
+  
   try {
-    // create reset link that front-end requires
-    const resetLink = process.env.CLIENT_BASE_URL + `/reset-password/${resetToken}`;
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "TSM Password Reset Request",
-      html: `<p>Click <a href="${resetLink}">here</a> to reset your password. The link expires in 10 minutes.</p>`
-    }
     // send reset link to email
     await transporter.sendMail(mailOptions);
     console.log('reset email sent');
