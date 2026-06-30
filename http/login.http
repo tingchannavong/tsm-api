@@ -28,7 +28,7 @@ Content-Type: application/json
 
 {
     "username": "superadmin",
-    "password": "admin999"
+    "password": "admin888"
 }
 
 ### GET my info
@@ -41,9 +41,9 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 Content-Type: application/json
 
 {
-    "oldPassword": "admin88",
-    "newPassword": "admin999",
-    "confirmPassword": "admin999"
+    "oldPassword": "admin999",
+    "newPassword": "admin888",
+    "confirmPassword": "admin888"
 }
 
 // TO BE IMPLEMENTED LATER 
@@ -53,13 +53,14 @@ POST {{BASE_URL}}/api/auth/forgot-password
 Content-Type: application/json
 
 {
-    "email" : "4352345"
+    "email" : "ting2friday@gmail.com"
 }
 
-### PATCH reset password
-PATCH {{BASE_URL}}/api/auth/reset-password/{{RESET_TOKEN}} 
+### POST reset password
+POST {{BASE_URL}}/api/auth/reset-password/{{RESET_TOKEN}} 
 Content-Type: application/json
 
 {
-    "password": "hehehehe"
+    "newPassword": "hehehe",
+    "confirmPassword": "hehehe"
 }

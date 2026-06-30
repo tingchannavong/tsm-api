@@ -38,6 +38,8 @@ model User {
   updatedOrders   Order[]         @relation("OrderUpdatedBy")
   updatedSessions SessionRecord[] @relation("SessionUpdatedBy")
   refreshTokens   RefreshToken[]
+  securityStamp String?
+  // resetTokens     ResetToken[]
 }
 
 model Location {
@@ -156,6 +158,15 @@ model RefreshToken {
   user      User     @relation(fields: [userId], references: [id])
 }
 
+// for security purposes
+// @User Table resetTokens Token[]
+// model ResetToken {
+//   id     Int    @id @default(autoincrement())
+//   token  String
+//   user   User?  @relation(fields: [userId], references: [id])
+//   userId Int?
+// }
+
 // not needed now, for future loyalty point feature
 // model Customer {
 //   id            Int      @id @default(autoincrement())
@@ -166,12 +177,4 @@ model RefreshToken {
 //   updatedAt     DateTime @default(now())
 // }
 
-// for security purposes
-// @User Table resetTokens Token[]
 
-// model Token {
-//   id    Int    @id @default(autoincrement())
-//   token String
-//   user   User? @relation(fields: [userId], references: [id])
-//   userId Int?
-// }

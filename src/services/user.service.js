@@ -10,7 +10,8 @@ export const USER_FIELDS = [
   "lastname",
   "phone",
   "password",
-  "role" 
+  "role", 
+  "securityStamp"
 ];
 
 export async function createUser(userData) {
@@ -38,6 +39,11 @@ export async function findUserByUsername(username) {
 
 export async function findUserByPhone(phone) {
   const found = await prisma.user.findUnique({ where: { phone } });
+  return found;
+}
+
+export async function findUserByEmail(email) {
+  const found = await prisma.user.findUnique({ where: { email } });
   return found;
 }
 
