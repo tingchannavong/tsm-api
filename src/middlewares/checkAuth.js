@@ -23,7 +23,7 @@ export function checkAuth(req, res, next) {
 
 export function checkResetToken(req, res, next) {
     const reset_token = req.params.token;
-    console.log('re at check reset token', reset_token)
+    // console.log('re at check reset token', reset_token)
     try {
         // check that token is valid in jwt
         const decode = verifyUserToken(reset_token, process.env.RESET_KEY); 
@@ -34,6 +34,6 @@ export function checkResetToken(req, res, next) {
         // if yes next
         next();
     } catch (error) {
-        throw createError(403, "Invalid credentials");
+        throw createError(403, "Invalid/expired credentials");
     }
 }
