@@ -13,10 +13,57 @@ import { compareStrings, hashString } from "../utils/crypt.js";
 import { havePermissionToEdit, sanitizeData } from "../utils/core.js";
 import transporter from "../utils/mailer.js";
 
-export async function registerUser(currentUser, payload) {
+export async function createRegisterInviteLink(currentUser, payload) {
+  // check role only ADMIN allow to create this
+  if (currentUser.role !== "ADMIN") {
+    throw createError(403, "Invalid permission");
+  }
+
+  const { email } = payload;
+
+  // call jwt function to create token
+  const jwtPayload = { email };
+  const inviteToken = generateToken(jwtPayload, process.env.INVITE_KEY, "1d");
+
+  // create reset link that front-end requires
+  const inviteLink = process.env.CLIENT_BASE_URL + `/register-invite/${inviteToken}`;
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "TSM Create New User Request",
+    html: `<p>Click <a href="${inviteLink}">here</a> to create user in TSM. The link expires in 1 day.</p>`
+  }
+  
+  try {
+    // send reset link to email
+    await transporter.sendMail(mailOptions);
+    console.log('invitation email sent');
+  } catch (error) {
+    throw createError(500, "Error sending email to user.")
+  }
+
+  return { inviteLink, 
+    inviteToken };
+}
+
+export async function userRegisterByInviteLink(token, payload) {
+
+  const registrationData = sanitizeData(payload, USER_FIELDS);
+
+  const user = await createUser(registrationData);
+  // so user can log in straight away
+  const token = generateToken(user);
+
+  return {
+    user,
+    token
+  };
+}
+
+export async function adminRegisterUser(currentUser, payload) {
   // check role only ADMIN allow to add
   if (currentUser.role !== "ADMIN") {
-    throw createError(401, "Invalid permission");
+    throw createError(403, "Invalid permission");
   }
 
   const registrationData = sanitizeData(payload, USER_FIELDS);

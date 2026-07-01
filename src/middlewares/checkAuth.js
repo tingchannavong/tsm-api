@@ -23,17 +23,25 @@ export function checkAuth(req, res, next) {
 
 export function checkResetToken(req, res, next) {
     const reset_token = req.params.token;
-    // console.log('re at check reset token', reset_token)
     try {
-        // check that token is valid in jwt
         const decode = verifyUserToken(reset_token, process.env.RESET_KEY); 
-        
-        // create a new key in re object to be sent to next step
         req.userPayload = decode;
-        // console.log('decode', decode)
-        // if yes next
         next();
     } catch (error) {
-        throw createError(403, "Invalid/expired credentials");
+        throw createError(403, "Invalid/expired reset link.");
+    }
+}
+
+export function checkInviteToken(req, res, next) {
+    const inviteToken = req.params.token;
+
+    try {
+        const decode = verifyUserToken(inviteToken, process.env.INVITE_KEY); 
+        
+        req.userPayload = decode;
+        // console.log('decode', decode)
+        next();
+    } catch (error) {
+        throw createError(403, "Invalid/expired invitation link.");
     }
 }

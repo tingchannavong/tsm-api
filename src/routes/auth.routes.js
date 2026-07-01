@@ -1,6 +1,6 @@
 import express from "express";
-import {changePasswordController, checkUserController, loginController, logOutController, refreshTokenController, registerController, resetPasswordController } from "../controllers/auth.controller.js";
-import { checkAuth, checkResetToken } from "../middlewares/checkAuth.js";
+import {changePasswordController, checkUserController, loginController, logOutController, refreshTokenController, registerController, registerInvitationController, resetPasswordController, userRegisterController } from "../controllers/auth.controller.js";
+import { checkAuth, checkInviteToken, checkResetToken } from "../middlewares/checkAuth.js";
 import { validate } from "../middlewares/validate.js";
 import { ChangePasswordSchema, ResetPasswordSchema } from "../validations/auth.schema.js";
 // another clean way to write
@@ -9,6 +9,8 @@ import { ChangePasswordSchema, ResetPasswordSchema } from "../validations/auth.s
 
 const router = express.Router();
 
+router.post('/register/:token', checkInviteToken, userRegisterController);
+router.post('/register-invite', checkAuth, registerInvitationController);
 router.post('/register', checkAuth, registerController);
 
 router.post('/login', loginController);

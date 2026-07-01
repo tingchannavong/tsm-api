@@ -1,9 +1,11 @@
 import {
+  adminRegisterUser,
   changeUserPassword,
+  createRegisterInviteLink,
   createResetPasswordLink,
   logOut,
   manageRefreshToken,
-  registerUser,
+  userRegisterByInviteLink,
   resetUserPassword,
   verifyUserAuth,
 } from "../services/auth.services.js";
@@ -14,8 +16,27 @@ import { findUserByPhone } from "../services/user.service.js";
 
 export async function registerController(req, res, next) {
   try {
-    const user = await registerUser(req.userPayload, req.body);
+    const user = await adminRegisterUser(req.userPayload, req.body);
     res.status(201).json({ message: "User added successfully", user });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function userRegisterController(req, res, next) {
+  const { token } = req.params;
+  try {
+    const user = await userRegisterByInviteLink(token, req.body);
+    res.status(201).json({ message: "User registered successfully", user });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function registerInvitationController(req, res, next) {
+  try {
+    const responses = await createRegisterInviteLink(req.userPayload, req.body);
+    res.status(201).json({ message: "Register invitation email sent successfully.", responses });
   } catch (error) {
     next(error);
   }
