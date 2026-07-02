@@ -28,12 +28,14 @@ class TokenService {
     const rawToken = generateToken(payload, JWT_SECRETS[type], ttl);
 
     const result = await tx.token.create({
+      data: {
       token: hashToken(rawToken),
       type,
       expiresAt: new Date(Date.now() + ttl * 1000),
       userId: options.userId || null,
       ipAddress: options.ipAddress || null,
       userAgent: options.userAgent || null,
+    }
     });
     return {
       rawToken,
@@ -42,7 +44,7 @@ class TokenService {
   }
 
   // verify token by find if it exists and not expired
-  static async verify(rawToken, type) {
+  static async verify(rawToken, type, tx = prisma) {
     let decoded;
     try {
       decoded = verifyUserToken(rawToken, JWT_SECRETS[type]);
@@ -52,7 +54,7 @@ class TokenService {
 
     if (decoded.type !== type) return null;
 
-    const result = await prisma.token.findUnique({
+    const result = await tx.token.findUnique({
       where: { token: hashToken(rawToken)},
     });
 
@@ -67,8 +69,8 @@ class TokenService {
   }
 
   // delete by id
-  static async revoke(id) {
-    await prisma.token.delete({ where: { id } });
+  static async revoke(token, tx = prisma) {
+    await tx.token.delete({ where: { token: hashToken(token) } });
   }
 
   static async revokeAllForUser(userId, type) {

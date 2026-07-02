@@ -14,7 +14,3 @@ export async function compareStrings(string, hash) {
 export function hashToken(rawToken) {
   return crypto.createHash('sha256').update(rawToken).digest('hex');
 }
-
-export function createToken(rawToken) {
-  return crypto.createHash('sha256').update(rawToken).digest('hex');
-}

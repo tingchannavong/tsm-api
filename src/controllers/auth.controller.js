@@ -91,8 +91,11 @@ export async function refreshTokenController(req, res, next) {
 export async function logOutController(req, res, next) {
   try {
     const refreshToken = req.cookies.refreshToken;
+    const userId = req.userPayload.id;
 
-    const result = await logOut(refreshToken);
+    const result = await logOut(userId, refreshToken);
+
+    res.clearCookie('refreshToken');
 
     res.status(200).json({ message: "Log out success" });
   } catch (error) {
@@ -131,9 +134,10 @@ export async function checkUserController(req, res, next) {
 }
 
 export async function resetPasswordController(req, res, next) {
+  const { token } = req.params;
   try {
     // reset password service
-    const result = await resetUserPassword(req.userPayload, req.body);
+    const result = await resetUserPassword(token, req.body);
     res.status(200).json({
       message: "Password reset successfully!",
       responses: {
@@ -146,10 +150,3 @@ export async function resetPasswordController(req, res, next) {
     next(error);
   }
 }
-
-// Bonus security save reset token in db
-// then delete it after pw changed to prevent double use how?
-// create database reset_token + id
-// where reset_token, if exist, can update password
-// patch update successfully
-// delete all tokens where userid

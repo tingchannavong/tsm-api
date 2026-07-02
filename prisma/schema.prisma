@@ -38,7 +38,6 @@ model User {
   updatedOrders   Order[]         @relation("OrderUpdatedBy")
   updatedSessions SessionRecord[] @relation("SessionUpdatedBy")
   tokens          Token[]
-  securityStamp   DateTime?
 }
 
 model Location {
@@ -163,17 +162,6 @@ model Token {
   userId    Int?
   user      User?     @relation(fields: [userId], references: [id])
 }
-
-// model RefreshToken {
-//   id        Int      @id @default(autoincrement())
-//   token     String   @unique
-//   createdAt DateTime @default(now())
-//   expiresAt DateTime
-//   ipAddress String 
-//   userAgent String 
-//   userId    Int 
-//   user      User     @relation(fields: [userId], references: [id])
-// }
 
 // not needed now, for future loyalty point feature
 // model Customer {

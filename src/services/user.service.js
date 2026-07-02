@@ -14,13 +14,13 @@ export const USER_FIELDS = [
   "securityStamp"
 ];
 
-export async function createUser(userData) {
+export async function createUser(userData, tx = prisma) {
   const { username, password, phone, email, firstname, lastname, role } =
     userData;
 
   const hash = await hashString(password);
 
-  const result = await prisma.user.create({
+  const result = await tx.user.create({
     data: { username, phone, email, firstname, lastname, password: hash, role },
   });
 
