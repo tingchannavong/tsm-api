@@ -37,9 +37,8 @@ model User {
   createdOrders   Order[]         @relation("OrderCreatedBy")
   updatedOrders   Order[]         @relation("OrderUpdatedBy")
   updatedSessions SessionRecord[] @relation("SessionUpdatedBy")
-  refreshTokens   RefreshToken[]
-  securityStamp DateTime?
-  // resetTokens     ResetToken[]
+  tokens          Token[]
+  securityStamp   DateTime?
 }
 
 model Location {
@@ -147,24 +146,33 @@ model Currency {
   pricings Pricing[]
 }
 
-model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
-  createdAt DateTime @default(now())
-  expiresAt DateTime
-  ipAddress String
-  userAgent String
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+enum TokenType {
+  REFRESH
+  INVITE
+  PASSWORD_RESET
 }
 
-// for security purposes
-// @User Table resetTokens Token[]
-// model ResetToken {
-//   id     Int    @id @default(autoincrement())
-//   token  String
-//   user   User?  @relation(fields: [userId], references: [id])
-//   userId Int?
+model Token {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique
+  type      TokenType
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    Int?
+  user      User?     @relation(fields: [userId], references: [id])
+}
+
+// model RefreshToken {
+//   id        Int      @id @default(autoincrement())
+//   token     String   @unique
+//   createdAt DateTime @default(now())
+//   expiresAt DateTime
+//   ipAddress String 
+//   userAgent String 
+//   userId    Int 
+//   user      User     @relation(fields: [userId], references: [id])
 // }
 
 // not needed now, for future loyalty point feature
@@ -176,5 +184,3 @@ model RefreshToken {
 //   createdAt     DateTime @default(now())
 //   updatedAt     DateTime @default(now())
 // }
-
-

@@ -46,7 +46,8 @@ export async function createRegisterInviteLink(currentUser, payload) {
     inviteToken };
 }
 
-export async function userRegisterByInviteLink(token, payload) {
+export async function userRegisterByInviteLink(inviteToken, payload) {
+  // check that invite token exists in db
 
   const registrationData = sanitizeData(payload, USER_FIELDS);
 
@@ -105,29 +106,30 @@ export async function verifyUserAuth(username, password, ipAddress, userAgent) {
   };
 }
 
+export async function logOut(refreshToken) {
+  // console.log("refreshToken", refreshToken);
+  if (!refreshToken) throw createError(400, "No refresh token.");
+  await prisma.token.delete({
+    where: {
+      token: refreshToken,
+    },
+  });
+}
+
 // REFRESH TOKEN SAVE TO DB
-export async function createRefreshTokenRecord(user, refreshTokenData, decode) {
+export async function createRefreshTokenRecord(user, refreshTokenData, decode, tx = prisma) {
   const { refreshToken, ipAddress, userAgent } = refreshTokenData;
-  const res = await prisma.refreshToken.create({
+  const res = await tx.token.create({
     data: {
       userId: user.id,
       token: refreshToken,
+      type: "REFRESH",
       expiresAt: new Date(decode.exp * 1000),
       ipAddress,
       userAgent,
     },
   });
   return res;
-}
-
-export async function logOut(refreshToken) {
-  console.log("refreshToken", refreshToken);
-  if (!refreshToken) throw createError(400, "No refresh token.");
-  await prisma.refreshToken.delete({
-    where: {
-      token: refreshToken,
-    },
-  });
 }
 
 export async function manageRefreshToken(
@@ -139,54 +141,42 @@ export async function manageRefreshToken(
     throw createError(401, "No refresh token provided");
   }
 
-  const savedToken = await prisma.refreshToken.findUnique({
-    where: { token: oldRefreshToken },
-  });
-
-  // console.log('savedToken', savedToken)
-
-  if (!savedToken) throw createError(401, "No saved token");
-
-  if (savedToken.expiresAt < new Date()) {
-    await prisma.refreshToken.delete({
-      where: {
-        token: oldRefreshToken,
-      },
+  console.log('oldRefreshToken', oldRefreshToken)
+  return await prisma.$transaction(async (tx) => {
+    // 1. Find the token
+    const savedToken = await tx.token.findUnique({
+      where: { token: oldRefreshToken },
     });
-    throw createError(401, "Refresh token expired.");
-  }
 
-  // delete old one anyway
-  await prisma.refreshToken.delete({
-    where: {
-      token: oldRefreshToken,
-    },
+    if (!savedToken) throw createError(401, "No saved token");
+
+    // 2. Check expiry
+    if (savedToken.expiresAt < new Date()) {
+      await tx.token.delete({ where: { token: oldRefreshToken } });
+      throw createError(401, "Refresh token expired.");
+    }
+
+    // 3. Delete the old one
+    await tx.token.delete({ where: { token: oldRefreshToken } });
+
+    // 4. Decode and find user
+    const decodeOld = verifyUserToken(oldRefreshToken, process.env.REFRESH_KEY);
+    const user = await findUserById(decodeOld.id);
+    if (!user) throw createError(400, "Invalid user.");
+
+    // 5. Create new tokens (pass the transaction client 'tx' here)
+    // success: proceed
+    const res = await createAuthTokens(user, ipAddress, userAgent, tx);
+
+    return {
+      access_token: res.access_token,
+      refreshToken: res.refreshToken,
+      user: { id: user.id, name: user.username, email: user.email },
+    };
   });
-
-  const decodeOld = verifyUserToken(oldRefreshToken, process.env.REFRESH_KEY);
-
-  const user = await findUserById(decodeOld.id);
-
-  if (!user) {
-    throw createError(400, "Invalid username or password.");
-  }
-  // success: proceed
-  const res = await createAuthTokens(user, ipAddress, userAgent);
-  const newAccessToken = res.access_token;
-  const newRefreshToken = res.refreshToken;
-
-  return {
-    access_token: newAccessToken,
-    refreshToken: newRefreshToken,
-    user: {
-      id: user.id,
-      name: user.username,
-      email: user.email,
-    },
-  };
 }
 
-export async function createAuthTokens(user, ipAddress, userAgent) {
+export async function createAuthTokens(user, ipAddress, userAgent, tx = prisma) {
   const { role, username, id } = user;
   const payload = { role, username, id };
   const access_token = generateToken(payload, process.env.SECRET_KEY, "15m");
@@ -199,7 +189,7 @@ export async function createAuthTokens(user, ipAddress, userAgent) {
     refreshToken,
   };
 
-  const res = await createRefreshTokenRecord(user, refreshTokenData, decode);
+  const res = await createRefreshTokenRecord(user, refreshTokenData, decode, tx);
   if (!res) {
     throw createError(500, "Failed to save refresh token");
   }
@@ -243,6 +233,8 @@ export async function createResetPasswordLink(payload) {
   // call jwt function to create token
   const jwtPayload = { id: user.id, securityStamp:  timeStamp};
   const resetToken = generateToken(jwtPayload, process.env.RESET_KEY, "10m");
+
+  // save reset token to db
 
   // create reset link that front-end requires
   const resetLink = process.env.CLIENT_BASE_URL + `/reset-password/${resetToken}`;
