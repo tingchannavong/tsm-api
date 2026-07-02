@@ -15,17 +15,10 @@ const JWT_SECRETS = {
   INVITE: process.env.INVITE_KEY ,
 };
 
-export async function createTokenRecord(type, data) {
-const res = await prisma.token.create({
-    data
-  });
-  return res;
-}
-
 class TokenService {
 
   // create new token
-  static async issue(type, options = {}) {
+  static async issue(type, options = {}, tx = prisma) {
     const ttl = TTL_SECONDS[type];
     const payload = {
       type,
@@ -34,7 +27,7 @@ class TokenService {
 
     const rawToken = generateToken(payload, JWT_SECRETS[type], ttl);
 
-    const result = await prisma.token.create({
+    const result = await tx.token.create({
       token: hashToken(rawToken),
       type,
       expiresAt: new Date(Date.now() + ttl * 1000),
@@ -91,3 +84,5 @@ class TokenService {
     return count;
   }
 }
+
+export default TokenService;

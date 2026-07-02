@@ -12,6 +12,7 @@ import {
 import { compareStrings, hashString } from "../utils/crypt.js";
 import { havePermissionToEdit, sanitizeData } from "../utils/core.js";
 import transporter from "../utils/mailer.js";
+import TokenService from "./token.service.js";
 
 export async function createRegisterInviteLink(currentUser, payload) {
   // check role only ADMIN allow to create this
@@ -117,20 +118,7 @@ export async function logOut(refreshToken) {
 }
 
 // REFRESH TOKEN SAVE TO DB
-export async function createRefreshTokenRecord(user, refreshTokenData, decode, tx = prisma) {
-  const { refreshToken, ipAddress, userAgent } = refreshTokenData;
-  const res = await tx.token.create({
-    data: {
-      userId: user.id,
-      token: refreshToken,
-      type: "REFRESH",
-      expiresAt: new Date(decode.exp * 1000),
-      ipAddress,
-      userAgent,
-    },
-  });
-  return res;
-}
+
 
 export async function manageRefreshToken(
   oldRefreshToken,
@@ -176,27 +164,44 @@ export async function manageRefreshToken(
   });
 }
 
+// export async function createRefreshTokenRecord(user, refreshTokenData, decode, tx = prisma) {
+//   const { refreshToken, ipAddress, userAgent } = refreshTokenData;
+//   const res = await tx.token.create({
+//     data: {
+//       userId: user.id,
+//       token: refreshToken,
+//       type: "REFRESH",
+//       expiresAt: new Date(decode.exp * 1000),
+//       ipAddress,
+//       userAgent,
+//     },
+//   });
+//   return res;
+// }
+
 export async function createAuthTokens(user, ipAddress, userAgent, tx = prisma) {
   const { role, username, id } = user;
   const payload = { role, username, id };
   const access_token = generateToken(payload, process.env.SECRET_KEY, "15m");
-  const refreshToken = generateToken(payload, process.env.REFRESH_KEY, "14d");
-  const decode = verifyUserToken(refreshToken, process.env.REFRESH_KEY);
+  // const refreshToken = generateToken(payload, process.env.REFRESH_KEY, "14d");
+  // const decode = verifyUserToken(refreshToken, process.env.REFRESH_KEY);
 
   const refreshTokenData = {
+    userId: user.id,
     ipAddress,
     userAgent,
     refreshToken,
   };
 
-  const res = await createRefreshTokenRecord(user, refreshTokenData, decode, tx);
+  const res = await TokenService.issue('REFRESH', refreshTokenData, tx);
+  // const res = await createRefreshTokenRecord(user, refreshTokenData, decode, tx);
   if (!res) {
     throw createError(500, "Failed to save refresh token");
   }
 
   return {
     access_token,
-    refreshToken,
+    refreshToken: res.rawToken,
   };
 }
 
@@ -274,40 +279,3 @@ export async function resetUserPassword(currentUser, payload) {
 
   return await updateUserById(id, { password: newPassword, securityStamp: new Date() });
 }
-
-// SECURITY FOR RESET PASSWORD IN RESET DB
-// export async function createResetTokenIdentity(resetToken, userId) {
-//   const hash = await hashString(resetToken);
-//   const res = await prisma.token.create({
-//     data: {
-//       token: hash,
-//       userId,
-//     },
-//   });
-//   return res;
-// }
-
-// export async function findResetTokenByUserId(userId) {
-//   const res = await prisma.token.find({
-//     where: { userId }
-//   });
-//   return res;
-// }
-
-// export async function compareResetTokenIdentity(resetToken, userId) {
-//   const hash = await hashString(resetToken);
-//   const res = await prisma.token.create({
-//     data: {
-//       token: hash,
-//       userId,
-//     },
-//   });
-//   return res;
-// }
-
-// export async function deleteResetTokenIdentity(resetToken) {
-//   const res = await prisma.token.delete({
-//     where: { token }
-//   });
-//   return res;
-// }
