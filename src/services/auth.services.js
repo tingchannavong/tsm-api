@@ -32,7 +32,7 @@ export async function createRegisterInviteLink(currentUser, payload) {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "TSM Create New User Request",
-    html: `<p>Click <a href="${inviteLink}">here</a> to create user in TSM. The link expires in 1 day.</p>`,
+    html: `<p>Click <a href="${inviteLink}">here</a> to create user in TSM. The link expires in 3 days.</p>`,
   };
 
   try {
