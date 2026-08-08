@@ -15,13 +15,13 @@ export const USER_FIELDS = [
 ];
 
 export async function createUser(userData, tx = prisma) {
-  const { username, password, phone, email, firstname, lastname, role } =
+  const { username, password, phone, email, firstname, lastname, role, provider } =
     userData;
 
   const hash = await hashString(password);
 
   const result = await tx.user.create({
-    data: { username, phone, email, firstname, lastname, password: hash, role },
+    data: { username, phone, email, firstname, lastname, password: hash, role, provider },
   });
 
   return result;

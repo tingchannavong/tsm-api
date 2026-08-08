@@ -27,8 +27,8 @@ model User {
   username        String          @unique
   password        String?
   email           String?          @unique
-  firstname       String
-  lastname        String
+  firstname       String?
+  lastname        String?
   phone           String?          @unique
   provider        String?          @default("local")
   role            RoleType        @default(STAFF)

@@ -83,44 +83,39 @@ export async function adminRegisterUser(currentUser, payload) {
 export async function googleAuthService(payload, ipAddress, userAgent) {
   const { idToken } = payload;
   const googlePayload = await verifyGoogleToken(idToken);
-  console.log("googlePayload", googlePayload);
   const user = await findUserByEmail(googlePayload.email);
-  console.log("user", user);
 
-  if (user.provider === "local") {
-    throw createError(400, "User already exists. Please log in via username and password.");
-  }
-
-  if (!user) {
-    // if user does not exist, create new user
-    console.log("we are here");
+  // user does not exist, create new user
+  if (!user) {  
+    console.log('we are here')  
     const userData = {
       username: googlePayload.name,
       phone: googlePayload.phone,
       email: googlePayload.email,
       firstname: googlePayload.given_name,
       lastname: googlePayload.family_name,
-      provider: "google"
+      provider: "google",
     };
+
     const registrationData = sanitizeData(userData, USER_FIELDS);
 
-    const user = await createUser(registrationData);
+    const newUser = await prisma.user.create({
+    data: { ...registrationData },
+  });
+
+    return buildAuthResponse(newUser, ipAddress, userAgent);
   }
 
-  const res = await createAuthTokens(user, ipAddress, userAgent);
-//  console.log('res at create auth tokens', res)
-
-return {
-  access_token: res.access_token,
-  refreshToken: res.refreshToken,
-  user: {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-  },
-}
-
+  if (user.provider === "local") {
+    throw createError(
+      400,
+      `User ${user.username} already exists. Please log in via username and password.`,
+    );
+  }
   
+  if (user.provider === "google") {
+    return buildAuthResponse(user, ipAddress, userAgent);
+  }
 }
 
 export async function verifyUserAuth(username, password, ipAddress, userAgent) {
@@ -241,6 +236,20 @@ export async function createAuthTokens(
   };
 }
 
+export async function buildAuthResponse(user, ipAddress, userAgent) {
+  const { access_token, refreshToken } = await createAuthTokens(user, ipAddress, userAgent);
+
+  return {
+    access_token,
+    refreshToken,
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    },
+  };
+}
+
 // RESET PASSWORD
 export async function createResetPasswordLink(payload) {
   const { email } = payload;
@@ -303,3 +312,4 @@ export async function resetUserPassword(resetToken, payload) {
     return await updateUserById(decodeOld.userId, { password: newPassword });
   });
 }
+

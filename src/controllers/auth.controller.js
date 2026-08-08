@@ -35,7 +35,7 @@ export async function googleAuthController(req, res, next) {
       secure: false,
     });
 
-    res.status(200).json({ message: "Log in via google success success", access_token });
+    res.status(200).json({ message: "Log in via google success success", access_token: user.access_token });
   } catch (error) {
     next(error);
   }
