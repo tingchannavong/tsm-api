@@ -8,6 +8,7 @@ import {
   userRegisterByInviteLink,
   resetUserPassword,
   verifyUserAuth,
+  googleAuthService,
 } from "../services/auth.services.js";
 import { generateToken } from "../utils/jwt.js";
 import createError from "http-errors";
@@ -18,6 +19,23 @@ export async function registerController(req, res, next) {
   try {
     const user = await adminRegisterUser(req.userPayload, req.body);
     res.status(201).json({ message: "User added successfully", user });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function googleAuthController(req, res, next) {
+  try {
+    const ipAddress = req.ip;
+    const userAgent = req.headers["user-agent"] || "N/A";
+    const user = await googleAuthService(req.body, ipAddress, userAgent);
+    // refresh token is sent to front-end as cookie of express
+    res.cookie("refreshToken", user.refreshToken, {
+      httpOnly: true,
+      secure: false,
+    });
+
+    res.status(200).json({ message: "Log in via google success success", access_token });
   } catch (error) {
     next(error);
   }

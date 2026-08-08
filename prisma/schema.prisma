@@ -25,11 +25,12 @@ enum UserStatus {
 model User {
   id              Int             @id @default(autoincrement())
   username        String          @unique
-  password        String
-  email           String          @unique
+  password        String?
+  email           String?          @unique
   firstname       String
   lastname        String
-  phone           String          @unique
+  phone           String?          @unique
+  provider        String?          @default("local")
   role            RoleType        @default(STAFF)
   status          UserStatus      @default(ACTIVE)
   createdAt       DateTime        @default(now())

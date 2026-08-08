@@ -13,6 +13,7 @@ import { compareStrings, hashString } from "../utils/crypt.js";
 import { havePermissionToEdit, sanitizeData } from "../utils/core.js";
 import transporter from "../utils/mailer.js";
 import TokenService from "./token.service.js";
+import { verifyGoogleToken } from "./google.service.js";
 
 export async function createRegisterInviteLink(currentUser, payload) {
   // check role only ADMIN allow to create this
@@ -52,13 +53,13 @@ export async function userRegisterByInviteLink(inviteToken, payload) {
   if (!record) throw createError(400, "Invalid or expired invite");
 
   return await prisma.$transaction(async (tx) => {
-     const registrationData = sanitizeData(payload, USER_FIELDS);
-     const user = await createUser(registrationData, tx);
+    const registrationData = sanitizeData(payload, USER_FIELDS);
+    const user = await createUser(registrationData, tx);
 
-     // delete old invite token
-     await TokenService.revoke(inviteToken, tx);
+    // delete old invite token
+    await TokenService.revoke(inviteToken, tx);
     return user;
-   });
+  });
 }
 
 export async function adminRegisterUser(currentUser, payload) {
@@ -77,6 +78,49 @@ export async function adminRegisterUser(currentUser, payload) {
     user,
     // token
   };
+}
+
+export async function googleAuthService(payload, ipAddress, userAgent) {
+  const { idToken } = payload;
+  const googlePayload = await verifyGoogleToken(idToken);
+  console.log("googlePayload", googlePayload);
+  const user = await findUserByEmail(googlePayload.email);
+  console.log("user", user);
+
+  if (user.provider === "local") {
+    throw createError(400, "User already exists. Please log in via username and password.");
+  }
+
+  if (!user) {
+    // if user does not exist, create new user
+    console.log("we are here");
+    const userData = {
+      username: googlePayload.name,
+      phone: googlePayload.phone,
+      email: googlePayload.email,
+      firstname: googlePayload.given_name,
+      lastname: googlePayload.family_name,
+      provider: "google"
+    };
+    const registrationData = sanitizeData(userData, USER_FIELDS);
+
+    const user = await createUser(registrationData);
+  }
+
+  const res = await createAuthTokens(user, ipAddress, userAgent);
+//  console.log('res at create auth tokens', res)
+
+return {
+  access_token: res.access_token,
+  refreshToken: res.refreshToken,
+  user: {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+  },
+}
+
+  
 }
 
 export async function verifyUserAuth(username, password, ipAddress, userAgent) {

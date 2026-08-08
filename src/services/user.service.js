@@ -10,8 +10,8 @@ export const USER_FIELDS = [
   "lastname",
   "phone",
   "password",
-  "role", 
-  "securityStamp"
+  "role",
+  "provider"
 ];
 
 export async function createUser(userData, tx = prisma) {
