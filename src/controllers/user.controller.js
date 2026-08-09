@@ -21,6 +21,7 @@ export async function getUserData(req, res, next) {
       firstname: userData.firstname,
       lastname: userData.lastname,
       phone: userData.phone,
+      provider: userData.provider
     });
   } catch (error) {
     next(error);
