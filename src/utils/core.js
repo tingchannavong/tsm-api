@@ -1,4 +1,4 @@
-import { convertDateTimeTo24HrTime } from "../../../tsm-frontend/src/utils/time.js";
+import { convertDateTimeTo24HrTime } from "./time.js";
 
 export function sanitizeFilters(payload) {
   const filters = Object.entries(payload).reduce((acc, [key, value]) => {
