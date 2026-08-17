@@ -11,7 +11,7 @@ import pricingRoutes from "./routes/pricing.routes.js";
 import cookieParser from "cookie-parser";
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 console.log("Hit the route!");
 

@@ -3,7 +3,12 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
+COPY prisma ./prisma/
+
 RUN npm ci --only=production 
+
+RUN npx prisma generate
+RUN npm prune --production
 
 COPY . .
 

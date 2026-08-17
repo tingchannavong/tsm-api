@@ -1,6 +1,8 @@
 import { z } from 'zod';
-import { SessionStatus } from '@prisma/client';
 import { IdScm, LocationIdScm, PeopleCountScm, NullGroupIdScm, NameScm, DateTimeScm, GroupIdScm, DateScm } from "./base.schema.js";
+import pkg from '@prisma/client';
+
+const { SessionStatus } = pkg;
 
 export const GetLocationSchema = z.object({
   query: z.object({

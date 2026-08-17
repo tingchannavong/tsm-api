@@ -1,6 +1,8 @@
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client"; // delete extension
+import pkg from "@prisma/client";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+
+const { PrismaClient } = pkg;
 
 const adapter = new PrismaMariaDb({
     host: process.env.DATABASE_HOST,

@@ -1,4 +1,6 @@
-import { Prisma } from "@prisma/client";
+import pkg from '@prisma/client';
+
+const { Prisma } = pkg;
 
 // special error handler middleware with error 1st argument
 // have to have total arg 4

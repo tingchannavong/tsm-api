@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { DateScm, IdScm, LocationIdScm, PeopleCountScm, NullGroupIdScm, NameScm, DateTimeScm, GroupIdScm, PriceScm } from "./base.schema.js";
-import { OrderStatus } from '@prisma/client';
+import pkg from '@prisma/client';
+
+const { OrderStatus } = pkg;
 
 export const CreateOrderSchema = z.object({
   body: z.object({
