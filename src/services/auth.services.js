@@ -22,6 +22,9 @@ export async function createRegisterInviteLink(currentUser, payload) {
   }
 
   const { email } = payload;
+  const user = await findUserByEmail(email);
+
+  if (user) throw createError(400, "A user already exists with this email.");
 
   // save to token db
   const res = await TokenService.issue("INVITE");
@@ -87,7 +90,6 @@ export async function googleAuthService(payload, ipAddress, userAgent) {
 
   // user does not exist, create new user
   if (!user) {  
-    console.log('we are here')  
     const userData = {
       username: googlePayload.name,
       phone: googlePayload.phone,
@@ -107,10 +109,15 @@ export async function googleAuthService(payload, ipAddress, userAgent) {
   }
 
   if (user.provider === "local") {
-    throw createError(
-      400,
-      `User ${user.username} already exists. Please log in via username and password.`,
-    );
+    return {
+      success: false,
+      requiresLinking: true,
+      message: `User ${user.username} already exists with a password.`,
+      existingUser: {
+        username: user.username,
+        email: user.email,
+      },
+    };
   }
   
   if (user.provider === "google") {

@@ -28,14 +28,20 @@ export async function googleAuthController(req, res, next) {
   try {
     const ipAddress = req.ip;
     const userAgent = req.headers["user-agent"] || "N/A";
-    const user = await googleAuthService(req.body, ipAddress, userAgent);
+    const authResult = await googleAuthService(req.body, ipAddress, userAgent);
+    
+    if (authResult.requiresLinking) {
+      // Send a 409 Conflict status with the data
+      return res.status(409).json(authResult);
+    }
+
     // refresh token is sent to front-end as cookie of express
-    res.cookie("refreshToken", user.refreshToken, {
+    res.cookie("refreshToken", authResult.refreshToken, {
       httpOnly: true,
       secure: false,
     });
 
-    res.status(200).json({ message: "Log in via google success success", access_token: user.access_token });
+    res.status(200).json({ message: "Log in via google success success", access_token: authResult.access_token });
   } catch (error) {
     next(error);
   }
