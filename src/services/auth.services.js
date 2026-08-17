@@ -137,19 +137,6 @@ export async function verifyUserAuth(username, password, ipAddress, userAgent) {
     throw createError(400, "Invalid credentials");
   }
 
-  // Success: proceed: below can delete later
-  // const res = await createAuthTokens(user, ipAddress, userAgent);
-  //  console.log('res at create auth tokens', res)
-
-  // return {
-  //   access_token: res.access_token,
-  //   refreshToken: res.refreshToken,
-  //   user: {
-  //     id: user.id,
-  //     name: user.name,
-  //     email: user.email,
-  //   },
-  // };
   return buildAuthResponse(user, ipAddress, userAgent);
 }
 
@@ -207,13 +194,6 @@ export async function manageRefreshToken(
     if (!user) throw createError(400, "Invalid user.");
 
     // 5. Create new tokens successful: proceed
-    // const res = await createAuthTokens(user, ipAddress, userAgent, tx);
-
-    // return {
-    //   access_token: res.access_token,
-    //   refreshToken: res.refreshToken,
-    //   user: { id: user.id, name: user.username, email: user.email },
-    // };
     return buildAuthResponse(user, ipAddress, userAgent);
   });
 }
