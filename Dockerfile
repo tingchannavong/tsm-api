@@ -36,3 +36,5 @@ EXPOSE 4000
 
 CMD ["npm", "run", "start"]
 # CMD ["node", "src/server.js"]
+# docker compose run --rm backend npx prisma migrate deploy
+# docker compose exec backend node prisma/seed.js
