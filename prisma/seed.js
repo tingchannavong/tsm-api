@@ -4,14 +4,26 @@ import prisma from "../src/libs/prismaClient.js";
 import bcrypt from "bcrypt";
 
 async function main() {
-  // await prisma.sessionRecord.deleteMany({ where: { status: {in: ['ACTIVE', 'ENDED'] }} });  
+  // await prisma.sessionRecord.deleteMany({ where: { status: {in: ['ACTIVE', 'ENDED'] }} }); 
+   await prisma.unit.create({
+    data: {
+      name: "Hourly"
+    },
+  });
+
+    await prisma.currency.create({
+    data: {
+      name: "Thai Baht",
+      code: "THB",
+      symbol: "฿"
+    },
+  });
+
    await prisma.pricing.create({
     data: {
-      billingIntervalMin: 1,
       name: "Hourly",
       currencyId: 1,
       unitId: 1,
-      roundingMethod: "ROUND_UP",
       price: 1.23
     },
   });
@@ -22,9 +34,9 @@ async function main() {
 
     const location = await prisma.location.upsert({
       where: { name: tableName },
-      // update: {
-      //   displayName: tableDisplayName,
-      // },
+      update: {
+        displayName: tableDisplayName,
+      },
       create: {
         name: tableName,
         displayName: tableDisplayName,
@@ -35,35 +47,35 @@ async function main() {
     console.log(`Seeded: ${location.displayName} (${location.id})`);
   }
 
-  // const username = 'admin';
-  // const plainPassword = 'Superhero111'; 
-  // const hashedPassword = await bcrypt.hash(plainPassword, 10);
+  const username = 'admin';
+  const plainPassword = 'password'; 
+  const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-  // console.log('Seeding superadmin user...');
+  console.log('Seeding superadmin user...');
 
-  // const superAdmin = await prisma.user.upsert({
-  //   where: { username: username },
-  //   update: {}, // Do nothing if the user already exists
-  //   create: {
-  //     username: username,
-  //     password: hashedPassword,
-  //     email: 'superadmin@example.com',
-  //     firstname: 'Super',
-  //     lastname: 'Admin',
-  //     phone: '+1234567890',
-  //     provider: 'local',
-  //     role: 'ADMIN', 
-  //     status: 'ACTIVE',
-  //   },
-  // });
+  const superAdmin = await prisma.user.upsert({
+    where: { username: username },
+    update: {}, // Do nothing if the user already exists
+    create: {
+      username: username,
+      password: hashedPassword,
+      email: 'superadmin@example.com',
+      firstname: 'Super',
+      lastname: 'Admin',
+      phone: '+1234567890',
+      provider: 'local',
+      role: 'ADMIN', 
+      status: 'ACTIVE',
+    },
+  });
 
-  // console.log(`Superadmin created/verified successfully:`);
-  // console.log({
-  //   id: superAdmin.id,
-  //   username: superAdmin.username,
-  //   email: superAdmin.email,
-  //   role: superAdmin.role,
-  // });
+  console.log(`Superadmin created/verified successfully:`);
+  console.log({
+    id: superAdmin.id,
+    username: superAdmin.username,
+    email: superAdmin.email,
+    role: superAdmin.role,
+  });
 
 }
 
